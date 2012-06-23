@@ -1,3 +1,4 @@
+from django.db import models
 from django_facebook.models import FacebookProfileModel
 
 class BatteriesProfile(FacebookProfileModel):

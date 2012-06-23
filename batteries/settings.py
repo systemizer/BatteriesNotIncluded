@@ -114,7 +114,8 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'south',
     'django_facebook',
-    'bauth',
+    'batteries.bauth',
+    'batteries.bapi',
 )
 
 # A sample logging configuration. The only tangible logging
