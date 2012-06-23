@@ -1,0 +1,5 @@
+*pyc
+*~
+*#
+myenv
+batteries/local_settings.py
