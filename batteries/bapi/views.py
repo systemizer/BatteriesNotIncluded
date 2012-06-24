@@ -32,14 +32,14 @@ def events(request):
     cached_value = cache.get(cache_key)
     if cached_value:
         return HttpResponse(json.dumps({'results':cached_value[offset*num_results:num_results*(offset+1)]}))
-    
+
 
     g1 = Greenlet.spawn(provider_request_map['eventbrite'],lat,lon,cur_time)
     g2 = Greenlet.spawn(provider_request_map['eventful'],lat,lon,cur_time)
     g3 = Greenlet.spawn(provider_request_map['yahoo'],lat,lon,cur_time)
 
     data = g3.get() + g2.get() + g1.get()
-    sorted(data,key = lambda d: d['start_time'])
+    data.sort(key = lambda d: d['start_time'])
 
     cache.set(cache_key,data,60*10)
 
@@ -57,7 +57,7 @@ def events_eventful(request):
         return HttpResponse(json.dumps({'results':[]}))
     if events['total_items'] == '1':
         events['events']['event'] = [events['events']['event']]
-    
+
     result = [{
             'eid':event['id'],
             'start_time':event['start_time'],
@@ -65,13 +65,13 @@ def events_eventful(request):
             'location':event['venue_name'],
             'name':event['title'],
             'description':event['description'],
-            'pic_square':''} 
+            'pic_square':''}
               for event in events['events']['event']]
 
     result_json = {'results':result}
-    
+
     return HttpResponse(json.dumps(result_json))
-    
+
 def events_yahoo(request):
     lat = request.GET.get("lat")
     lon = request.GET.get("lon")
@@ -85,12 +85,12 @@ def events_yahoo(request):
         'sort':'distance-asc',
         'format':'json'
         }
-    
+
     url = "%s?%s" % (base_url,urllib.urlencode(payload))
     result = requests.get(url)
 
     result_json = result.json
-    
+
     #yahoo returns empty string if no results exist?!?!?!?
     if not result_json:
         return HttpResponse(json.dumps({'results':[]}))
@@ -108,11 +108,11 @@ def events_yahoo(request):
             'name':event['name'],
             'description':'',
             'pic_square':event['photo_url']
-            }             
+            }
         for event in result_json['rsp']['event']]
-        
+
     return HttpResponse(json.dumps({'results':result_json}))
-    
+
 
 def events_eventbrite(request):
     lat = request.GET.get("lat")
@@ -139,9 +139,9 @@ def events_eventbrite(request):
             'name':event['event']['title'],
             'description':event['event']['description'],
             'pic_square':event['event']['logo'] if event['event'].has_key("logo") else ""
-            } 
+            }
                    #the first result in result.json['events'] is always the summary.
                    for event in result.json['events'][1:]]
 
     return HttpResponse(json.dumps({'results':result_json}))
-    
+
