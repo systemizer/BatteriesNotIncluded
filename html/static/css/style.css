@@ -91,10 +91,6 @@ a:visited {
     position: relative;
     top: 1em; }
 
-  .events {
-    border-top: 1px solid #adadad;
-    padding-top: 1em; }
-
   .event {
     position: relative;
     line-height: 1.5em;
@@ -127,6 +123,10 @@ a:visited {
 
   .long {
     display: block; }
+
+  .events {
+    border-top: 1px solid #adadad;
+    padding-top: 1em; }
 
   .event {
     border: 0;

@@ -112,10 +112,6 @@ $event-border-color: #adadad;
     position: relative;
     top: 1em;
   }
-  .events {
-    border-top: 1px solid #adadad;
-    padding-top: 1em;
-  }
   .event {
     position: relative;
     line-height: 1.5em;
@@ -151,6 +147,10 @@ $event-border-color: #adadad;
   }
   .medium { display: none; }
   .long { display: block; }
+  .events {
+    border-top: 1px solid #adadad;
+    padding-top: 1em;
+  }
   .event {
     border: 0;
     margin: 0;
