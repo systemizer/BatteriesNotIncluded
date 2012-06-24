@@ -64,8 +64,8 @@ def yahoo_request(lat,lon,cur_time):
     return [
         {
             'eid':event['id'],
-            'start_time':convert_iso_to_epoch(event['iso_start']) if event['iso_start'] else None,
-            'end_time':convert_iso_to_epoch(event['iso_end']) if event['iso_end'] else None,
+            'start_time':convert_iso_to_epoch(event['utc_start']) if event['utc_start'] else None,
+            'end_time':convert_iso_to_epoch(event['utc_end']) if event['utc_end'] else None,
             'location':event['venue_name'],
             'location_gps':"%s,%s" % (event['latitude'],event['longitude']),
             'url':event['ticket_url'],
@@ -74,7 +74,7 @@ def yahoo_request(lat,lon,cur_time):
             'pic_square':event['photo_url']
             }             
         for event in result_json['rsp']['event']
-        if event['iso_start'] and convert_iso_to_epoch(event['iso_start'])>cur_time]
+        if event['utc_start'] and convert_iso_to_epoch(event['utc_start'])>cur_time]
 
 
 def eventbrite_request(lat,lon,cur_time):

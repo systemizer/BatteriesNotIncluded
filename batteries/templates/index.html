@@ -17,7 +17,20 @@
   <body>
     <div id="hd">
       <h1>Events Near You!</h1>
-      <p>At an event? <a href="/login">Check in with Facebook</a>.</p>
+      <p>At an event?
+	{% if user.is_authenticated %}
+	<p>Welcome {{user.get_profile.facebook_name}}</p>
+	<img src="{{user.get_profile.image.url}}" width="50px" height="auto" />
+	<a class="logout-button" href="/accounts/logout/">Logout</a>
+	{% else %}
+        <form action="{% url facebook_connect %}?facebook_login=1" method="post">
+	  <input type="hidden" value="{{ request.path }}" name="next" />
+	  <div id="facebook_login_js">
+	    <input onclick="F.connect(this.parentNode.parentNode); return false;" type="image" src="http://e.fashiocdn.com/images/b_signin_facebook_small.png" /><br />
+	  </div>
+	</form>
+	{% endif %}
+      </p>
     </div>
     <div id="wrap">
       <div id="bd">
@@ -60,6 +73,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js"></script>
     <script src="{{ STATIC_URL }}/js/jquery.masonry.min.js"></script>
     <script src="{{ STATIC_URL }}/js/application.js"></script>
+
   </body>
 </html>
 
