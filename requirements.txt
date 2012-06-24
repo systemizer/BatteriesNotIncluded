@@ -5,6 +5,7 @@ South==0.7.5
 certifi==0.0.8
 chardet==1.0.1
 django-facebook==4.0.7
+eventbrite==0.43
 eventful==0.3
 gevent==0.13.6
 greenlet==0.4.0

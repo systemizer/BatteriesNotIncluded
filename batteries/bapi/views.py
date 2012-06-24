@@ -6,6 +6,7 @@ from django.conf import settings
 from batteries.bapi.utils import provider_url_generators
 
 import grequests
+import requests
 import urllib
 import eventful
 import time
@@ -60,3 +61,45 @@ def events_eventful(request):
     
     return HttpResponse(json.dumps(result_json))
     
+def events_yahoo(request):
+    lat = request.GET.get("lat")
+    lon = request.GET.get("lon")
+
+    base_url = "http://upcoming.yahooapis.com/services/rest/"
+    payload={
+        'method':'event.search',
+        'api_key':settings.YAHOOUPCOMING_API_KEY,
+        'location':"%s,%s" % (lat,lon),
+        'quick_date':'today',
+        'sort':'distance-asc',
+        'format':'json'
+        }
+    
+    url = "%s?%s" % (base_url,urllib.urlencode(payload))
+    result = requests.get(url)
+
+    result_json = result.json
+    
+    #yahoo returns empty string if no results exist?!?!?!?
+    if not result_json:
+        return HttpResponse(json.dumps({'results':[]}))
+    if result_json['rsp']['stat'] != "ok":
+        return HttpResponse(json.dumps({'results':[]}))
+    if result_json['rsp']['resultcount']==0:
+        return HttpResponse(json.dumps({'results':[]}))
+
+    result_json = [
+        {
+            'eid':event['id'],
+            'start_time':event['utc_start'],
+            'end_time':event['utc_end'],
+            'location':event['venue_name'],
+            'name':event['name'],
+            'description':'',
+            'pic_square':event['photo_url']
+            }             
+        for event in result_json['rsp']['event']]
+        
+    return HttpResponse(json.dumps({'results':result_json}))
+    
+
