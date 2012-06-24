@@ -1,6 +1,6 @@
 from django.shortcuts import render_to_response
 from django.template import RequestContext
-from django.http import HttpResponse, Http404, HttpNotAllowed
+from django.http import HttpResponse, Http404, HttpResponseNotAllowed
 from django.conf import settings
 from django.core.cache import cache
 from django.contrib.auth.decorators import login_required
@@ -158,7 +158,7 @@ def checkin(request):
     fb = get_persistent_graph(request)
     event_url = request.GET.get("event_url")
     if CheckIn.objects.filter(user=request.user, event_url=event_url).exists():
-        return HttpNotAllowed('Already checked in here.')
+        return HttpResponseNotAllowed('Already checked in here.')
     fb.set("me/maivnapp:check_in", website=event_url)
     CheckIn.objects.create(user=request.user, event_url=event_url)
     return HttpResponse("OK")
