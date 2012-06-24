@@ -47,11 +47,11 @@ def yahoo_request(lat,lon):
 
     #yahoo returns empty string if no results exist?!?!?!?
     if not result_json:
-        return HttpResponse(json.dumps({'results':[]}))
+        return []
     if result_json['rsp']['stat'] != "ok":
-        return HttpResponse(json.dumps({'results':[]}))
+        return []
     if result_json['rsp']['resultcount']==0:
-        return HttpResponse(json.dumps({'results':[]}))
+        return []
 
     return [
         {
