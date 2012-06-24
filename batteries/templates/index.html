@@ -5,7 +5,7 @@
 
     <meta name="HandheldFriendly" content="True">
     <meta name="MobileOptimized" content="320">
-    <meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; minimum-scale=1.0; user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
 
     <meta http-equiv="cleartype" content="on">
 
@@ -50,8 +50,8 @@
             at <a href="http://maps.google.com/maps?q=<%= encodeURIComponent(has_coords ? 'loc:' + lat + ',' + lon : location) %>"><%= h(location) %></a></p>
           <p class="description summarize"><%= h(description) %></p>
           <p class="actions">
-            <a class="share" href="#share">Share</a>
-            <a class="checkin" href="#checkin">Check in</a>
+          <a class="share" href="https://www.facebook.com/sharer.php?u=<%= encodeURIComponent(url) %>&t=<%= encodeURIComponent(title) %>">Share</a>
+            <a class="checkin" href="">Check in</a>
           </p>
           <div class="line clear"></div>
         </div>
