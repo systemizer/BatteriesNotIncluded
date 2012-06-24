@@ -11,8 +11,8 @@
 
     <title>Events Near You!</title>
 
-    <link rel="stylesheet" type="text/css" href="static/css/reset.css" />
-    <link rel="stylesheet" type="text/css" media="screen" href="static/css/style.css" />
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}/css/reset.css" />
+    <link rel="stylesheet" type="text/css" media="screen" href="{{ STATIC_URL }}/css/style.css" />
   </head>
   <body>
     <div id="wrap">
@@ -23,7 +23,7 @@
       <div id="bd">
         <div class="events">
           <div class="event">
-            <img src="sample.jpg" width="50" height="50" alt="" />
+            <img src="{{ STATIC_URL }}/sample.jpg" width="50" height="50" alt="" />
             <h2>Beer Fest</h2>
             <p class="time">4 - 6pm</p>
             <p class="location"><a href="http://maps.google.com/maps?q=1%20Infinite%20Loop,%20Cupertino,%20CA">1 Infinite Loop, Cupertino, CA</a></p>
@@ -41,7 +41,7 @@
           </div>
 
           <div class="event">
-            <img src="sample.jpg" width="50" height="50" alt="" />
+            <img src="{{ STATIC_URL }}/sample.jpg" width="50" height="50" alt="" />
             <h2>Beer Fest</h2>
             <p class="time">4 - 6pm</p>
             <p class="location"><a href="http://maps.google.com/maps?q=1%20Infinite%20Loop,%20Cupertino,%20CA">1 Infinite Loop, Cupertino, CA</a></p>
@@ -57,7 +57,7 @@
 
 
           <div class="event">
-            <img src="sample.jpg" width="50" height="50" alt="" />
+            <img src="{{ STATIC_URL }}/sample.jpg" width="50" height="50" alt="" />
             <h2>Beer Fest</h2>
             <p class="time">4 - 6pm</p>
             <p class="location"><a href="http://maps.google.com/maps?q=1%20Infinite%20Loop,%20Cupertino,%20CA">1 Infinite Loop, Cupertino, CA</a></p>
@@ -82,7 +82,7 @@
             </p>
           </div>
           <div class="event">
-            <img src="sample.jpg" width="50" height="50" alt="" />
+            <img src="{{ STATIC_URL }}/sample.jpg" width="50" height="50" alt="" />
             <h2>Beer Fest</h2>
             <p class="time">4 - 6pm</p>
             <p class="location"><a href="http://maps.google.com/maps?q=1%20Infinite%20Loop,%20Cupertino,%20CA">1 Infinite Loop, Cupertino, CA</a></p>
@@ -95,7 +95,7 @@
             </p>
           </div>
           <div class="event">
-            <img src="sample.jpg" width="50" height="50" alt="" />
+            <img src="{{ STATIC_URL }}/sample.jpg" width="50" height="50" alt="" />
             <h2>Beer Fest</h2>
             <p class="time">4 - 6pm</p>
             <p class="location"><a href="http://maps.google.com/maps?q=1%20Infinite%20Loop,%20Cupertino,%20CA">1 Infinite Loop, Cupertino, CA</a></p>
@@ -111,9 +111,23 @@
         <hr class="eol" />
       </div>
     </div>
+    {# required vars: image_url, title, time, location, description #}
+    <script type="text/template" id="event_template">
+      <div class="event">
+        <img src="{{ STATIC_URL }}/<%= image_url %>" width="50" height="50" alt="" />
+        <h2><%= title %></h2>
+        <p class="time"><%= time %></p>
+        <p class="location"><a href="http://maps.google.com/maps?q=<%= encodeURIComponent(location) %>"><%= location %></a></p>
+        <p class="description summarize"><%= description %></p>
+        <p class="actions">
+          <a class="share" href="#share">Share</a>
+          <a class="checkin" href="#checkin">Check in</a>
+        </p>
+      </div>
+    </script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js"></script>
-    <script src="static/js/jquery.masonry.min.js"></script>
-    <script src="static/js/application.js"></script>
+    <script src="{{ STATIC_URL }}/js/jquery.masonry.min.js"></script>
+    <script src="{{ STATIC_URL }}/js/application.js"></script>
   </body>
 </html>
 

@@ -1,3 +1,32 @@
+# Simple JavaScript Templating
+# John Resig - http://ejohn.org/ - MIT Licensed
+( ->
+  cache = {}
+  tmpl = @tmpl = (str, data) ->
+    fn = new Function("obj", "var p=[],print=function(){p.push.apply(p,arguments);};with(obj){p.push('" +
+      str.replace(/[\r\t\n]/g, " ")
+        .split("<%").join("\t").replace(/((^|%>)[^\t]*)'/g, "$1\r")
+        .replace(/\t=(.*?)%>/g, "',$1,'")
+        .split("\t").join("');")
+        .split("%>").join("p.push('")
+        .split("\r").join("\\'") + "');}return p.join('');")
+    if data
+      fn(data)
+    else
+      fn
+)()
+
+find_templates = (elements) ->
+  results = {}
+  $(elements).each ->
+    el = $(this)
+    results[el.attr('id')] = tmpl(el.html())
+  results
+
+# find templates
+templates = {}
+$ -> window.templates = templates = find_templates('script[type="text/template"]')
+
 # summarize
 summarize = (elements, max_length) ->
   $(elements).each ->
