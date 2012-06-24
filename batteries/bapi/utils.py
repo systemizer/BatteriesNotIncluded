@@ -1,14 +1,110 @@
+from django.conf import settings
+
 import urllib
+import time
+import eventful
+import requests
 
-MEETUP_URL_ROOT = "https://api.meetup.com/2/open_events.json"
+WITHIN = 2 #miles within to accept events (only required by some providers)
 
-def generate_meetup_url(lat,lon,cur_time):
-    interval = [cur_time-1000*60*30,cur_time+1000*60*60*1.5] #interval of time is 30 minutes prior and 1.5 hours later
-    payload = {'lat':lat,'lon':lon,time:"%s,%s" % (interval[0],interval[1])}
-    return "%s?%s" % (MEETUP_URL_ROOT,urllib.urlencode(payload))
+def convert_utc_to_epoch(utc_time):
+    if "UTC" in utc_time:
+        utc_time = utc_time.replace("UTC","").strip()
+    return int(time.mktime(time.strptime(utc_time, '%Y-%m-%d %H:%M:%S'))) - time.timezone
+
+def eventful_request(lat,lon):
+    api = eventful.API(settings.EVENTFUL_API_KEY)
+    events = api.call("/events/search",location="%s,%s" % (lat,lon),date="Today",within=WITHIN,page_size=10)
+
+    #if eventful only has one result, it doesnt give back an array. BAD!
+    if events['total_items'] == '0':
+        return []
+    if events['total_items'] == '1':
+        events['events']['event'] = [events['events']['event']]
+
+    return [{
+            'eid':event['id'],
+            'start_time':convert_utc_to_epoch(event['start_time']) if event['start_time'] else None,
+            'end_time':convert_utc_to_epoch(event['stop_time']) if event['stop_time'] else None,
+            'location':event['venue_name'],
+            'name':event['title'],
+            'description':event['description'],
+            'pic_square':''} 
+            for event in events['events']['event']]
+
+def yahoo_request(lat,lon):
+    base_url = "http://upcoming.yahooapis.com/services/rest/"
+    payload={
+        'method':'event.search',
+        'api_key':settings.YAHOOUPCOMING_API_KEY,
+        'location':"%s,%s" % (lat,lon),
+        'quick_date':'today',
+        'sort':'distance-asc',
+        'format':'json'
+        }    
+    url = "%s?%s" % (base_url,urllib.urlencode(payload))
+    result_json = requests.get(url).json
+
+    #yahoo returns empty string if no results exist?!?!?!?
+    if not result_json:
+        return HttpResponse(json.dumps({'results':[]}))
+    if result_json['rsp']['stat'] != "ok":
+        return HttpResponse(json.dumps({'results':[]}))
+    if result_json['rsp']['resultcount']==0:
+        return HttpResponse(json.dumps({'results':[]}))
+
+    return [
+        {
+            'eid':event['id'],
+            'start_time':convert_utc_to_epoch(event['utc_start']) if event['utc_start'] else None,
+            'end_time':convert_utc_to_epoch(event['utc_end']) if event['utc_end'] else None,
+            'location':event['venue_name'],
+            'name':event['name'],
+            'description':'',
+            'pic_square':event['photo_url']
+            }             
+        for event in result_json['rsp']['event']]
 
 
-provider_url_generators = {
-    'meetup':generate_meetup_url,
+def eventbrite_request(lat,lon):
+    base_url = "https://www.eventbrite.com/json/event_search"
+    payload = {'app_key':settings.EVENTBRITE_API_KEY,
+               'latitude':lat,
+               'longitude':lon,
+               'within':100,
+               'date':'Today',
+               'max':10,
+               }
+
+    url = "%s?%s" % (base_url,urllib.urlencode(payload))
+    result =  requests.get(url).json
+
+    return  [{
+            'eid':event['event']['id'],
+            'start_time':convert_utc_to_epoch(event['event']['start_date']) if event['event']['start_date'] else None,
+            'end_time':convert_utc_to_epoch(event['event']['end_date']) if event['event']['end_date'] else None,
+            'location':event['event']['venue']['name'],
+            'name':event['event']['title'],
+            'description':event['event']['description'],
+            'pic_square':event['event']['logo'] if event['event'].has_key("logo") else ""
+            } 
+                   #the first result in result.json['events'] is always the summary.
+                   for event in result['events'][1:]]
+
+
+def meetup_request(lat,lon):
+    pass
+
+provider_request_map = {
+    'eventful' : eventful_request,
+    'yahoo' : yahoo_request,
+    'eventbrite' : eventbrite_request,
+    'meetup' : meetup_request,
 }
 
+# MEETUP_URL_ROOT = "https://api.meetup.com/2/open_events.json"
+
+# def generate_meetup_url(lat,lon,cur_time):
+#     interval = [cur_time-1000*60*30,cur_time+1000*60*60*1.5] #interval of time is 30 minutes prior and 1.5 hours later
+#     payload = {'lat':lat,'lon':lon,time:"%s,%s" % (interval[0],interval[1])}
+#     return "%s?%s" % (MEETUP_URL_ROOT,urllib.urlencode(payload))

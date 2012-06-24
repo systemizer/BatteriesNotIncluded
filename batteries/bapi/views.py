@@ -3,13 +3,12 @@ from django.template import RequestContext
 from django.http import HttpResponse, Http404
 from django.conf import settings
 
-from batteries.bapi.utils import provider_url_generators
+from batteries.bapi.utils import provider_request_map
 
 import grequests
-import requests
+from gevent import Greenlet
+
 import urllib
-import eventful
-import eventbrite
 import time
 import json
 
@@ -21,19 +20,13 @@ def events(request):
     lat = request.GET.get("lat")
     lon = request.GET.get("lon")
     cur_time = int(time.time()*1000)
-    
-    #urls = [url_gen(lat,lon,cur_time) for url_gen in provider_url_generators.values()]
-        
-    payload = {'query':'select eid,start_time,end_time,location,name,description,pic_square from event where eid=209798352393506','format':'json'}
-    url = "https://api.facebook.com/method/fql.query?%s" % (urllib.urlencode(payload))
 
-    urls = [url]
+    g1 = Greenlet.spawn(provider_request_map['eventbrite'],lat,lon)
+    g2 = Greenlet.spawn(provider_request_map['eventful'],lat,lon)
+    g3 = Greenlet.spawn(provider_request_map['yahoo'],lat,lon)
 
-    rs = (grequests.get(u) for u in urls)
-    results = grequests.map(rs)
-    result = json.loads(results[0].text)
-    result_json = {'results':[result[0],result[0],result[0],result[0]]}
-    return HttpResponse(json.dumps(result_json))
+    data = g3.get() + g2.get() + g1.get()
+    return HttpResponse(json.dumps({'results':data}))
 
 def events_eventful(request):
     lat = request.GET.get("lat")
