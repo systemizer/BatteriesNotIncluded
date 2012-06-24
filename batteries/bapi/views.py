@@ -2,6 +2,7 @@ from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.http import HttpResponse, Http404
 from django.conf import settings
+from django.core.cache import cache
 
 from batteries.bapi.utils import provider_request_map
 
@@ -21,12 +22,19 @@ def events(request):
     lon = request.GET.get("lon")
     cur_time = int(time.time())
 
+    cache_key = "%s%s" % (int(float(lat)*100)/100.00,int(float(lon)*100)/100.00)
+    cached_value = cache.get(cache_key)
+    if cached_value:
+        return HttpResponse(json.dumps({'results':cached_value}))
+    
+
     g1 = Greenlet.spawn(provider_request_map['eventbrite'],lat,lon,cur_time)
     g2 = Greenlet.spawn(provider_request_map['eventful'],lat,lon,cur_time)
     g3 = Greenlet.spawn(provider_request_map['yahoo'],lat,lon,cur_time)
 
     data = g3.get() + g2.get() + g1.get()
     sorted(data,key = lambda d: d['start_time'])
+    cache.set(cache_key,data,60*10)
     return HttpResponse(json.dumps({'results':data}))
 
 def events_eventful(request):
