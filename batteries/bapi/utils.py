@@ -8,10 +8,13 @@ import requests
 WITHIN = 2 #miles within to accept events (only required by some providers)
 MAX_RESULTS_PER_PROVIDER = 20
 
-def convert_utc_to_epoch(utc_time):
-    if "UTC" in utc_time:
-        utc_time = utc_time.replace("UTC","").strip()
-    return int(time.mktime(time.strptime(utc_time, '%Y-%m-%d %H:%M:%S'))) - time.timezone
+def convert_iso_to_epoch(iso_time):
+    if "UTC" in iso_time:
+        iso_time = iso_time.replace("UTC","").strip()
+        return int(time.mktime(time.strptime(iso_time, '%Y-%m-%d %H:%M:%S'))) - time.timezone
+    else:
+        return int(time.mktime(time.strptime(iso_time, '%Y-%m-%d %H:%M:%S')))
+
 
 def eventful_request(lat,lon,cur_time):
     api = eventful.API(settings.EVENTFUL_API_KEY)
@@ -25,8 +28,8 @@ def eventful_request(lat,lon,cur_time):
 
     return [{
             'eid':event['id'],
-            'start_time':convert_utc_to_epoch(event['start_time']) if event['start_time'] else None,
-            'end_time':convert_utc_to_epoch(event['stop_time']) if event['stop_time'] else None,
+            'start_time':convert_iso_to_epoch(event['start_time']) if event['start_time'] else None,
+            'end_time':convert_iso_to_epoch(event['stop_time']) if event['stop_time'] else None,
             'location':event['venue_name'],
             'location_gps':"%s,%s" % (event['latitude'],event['longitude']),
             'url':event['url'],            
@@ -34,7 +37,7 @@ def eventful_request(lat,lon,cur_time):
             'description':event['description'],
             'pic_square':event['image']['url'] if event['image'] else ''} 
             for event in events['events']['event']
-            if event['start_time'] and convert_utc_to_epoch(event['start_time'])>cur_time ]
+            if event['start_time'] and convert_iso_to_epoch(event['start_time'])>cur_time ]
 
 def yahoo_request(lat,lon,cur_time):
     base_url = "http://upcoming.yahooapis.com/services/rest/"
@@ -61,8 +64,8 @@ def yahoo_request(lat,lon,cur_time):
     return [
         {
             'eid':event['id'],
-            'start_time':convert_utc_to_epoch(event['utc_start']) if event['utc_start'] else None,
-            'end_time':convert_utc_to_epoch(event['utc_end']) if event['utc_end'] else None,
+            'start_time':convert_iso_to_epoch(event['iso_start']) if event['iso_start'] else None,
+            'end_time':convert_iso_to_epoch(event['iso_end']) if event['iso_end'] else None,
             'location':event['venue_name'],
             'location_gps':"%s,%s" % (event['latitude'],event['longitude']),
             'url':event['ticket_url'],
@@ -71,7 +74,7 @@ def yahoo_request(lat,lon,cur_time):
             'pic_square':event['photo_url']
             }             
         for event in result_json['rsp']['event']
-        if event['utc_start'] and convert_utc_to_epoch(event['utc_start'])>cur_time]
+        if event['iso_start'] and convert_iso_to_epoch(event['iso_start'])>cur_time]
 
 
 def eventbrite_request(lat,lon,cur_time):
@@ -89,8 +92,8 @@ def eventbrite_request(lat,lon,cur_time):
 
     return  [{
             'eid':event['event']['id'],
-            'start_time':convert_utc_to_epoch(event['event']['start_date']) if event['event']['start_date'] else None,
-            'end_time':convert_utc_to_epoch(event['event']['end_date']) if event['event']['end_date'] else None,
+            'start_time':convert_iso_to_epoch(event['event']['start_date']) if event['event']['start_date'] else None,
+            'end_time':convert_iso_to_epoch(event['event']['end_date']) if event['event']['end_date'] else None,
             'location':event['event']['venue']['name'],
             'location_gps':event['event']['venue']['Lat-Long'].replace("/",",").replace(" ",""),
             'url':event['event']['url'],
@@ -100,7 +103,7 @@ def eventbrite_request(lat,lon,cur_time):
             } 
                    #the first result in result.json['events'] is always the summary.
                    for event in result['events'][1:]
-             if event['event']['start_date'] and convert_utc_to_epoch(event['event']['start_date'])>cur_time
+             if event['event']['start_date'] and convert_iso_to_epoch(event['event']['start_date'])>cur_time
              ]
 
 
