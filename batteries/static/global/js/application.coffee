@@ -265,6 +265,7 @@ $ ->
       success: (data) ->
         target.empty()
         for row in data.results
+          # seems to always be off by 2 hours....
           start_time = new Date(row.start_time * 1000 + 7200000)
           if row.end_time?
             end_time = new Date(row.end_time * 1000 + 7200000)
