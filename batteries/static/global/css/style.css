@@ -22,7 +22,7 @@ a:visited {
   color: #33c; }
 
 #hd {
-  font-size: 200%;
+  font-size: 170%;
   font-weight: bold;
   font-family: 'Open Sans', sans-serif;
   line-height: 1.5em;
@@ -36,16 +36,16 @@ a:visited {
     color: #eee;
     font-size: 75%;
     font-weight: normal; }
-  #hd a:link, #hd a:link:visited {
+  #hd a:link, #hd a:visited {
     color: #eee;
     background: #114ed2;
     text-shadow: 0;
     text-decoration: none;
-    -webkit-border-radius: 3px;
-    -moz-border-radius: 3px;
-    -o-border-radius: 3px;
-    -ms-border-radius: 3px;
-    border-radius: 3px;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    -o-border-radius: 5px;
+    -ms-border-radius: 5px;
+    border-radius: 5px;
     padding: 2px 3px; }
   #hd a:link:hover {
     color: #fff;
@@ -93,7 +93,7 @@ a:visited {
     padding: 0 0 1em 0;
     font-size: 130%;
     float: right; }
-    .event .actions a:link, .event .actions a:link:visited {
+    .event .actions a:link, .event .actions a:visited {
       text-decoration: none;
       padding: 5px 3px;
       color: #eee;

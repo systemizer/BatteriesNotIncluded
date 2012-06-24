@@ -59,7 +59,7 @@ $ -> window.templates = templates = find_templates('script[type="text/template"]
 
 # summarize
 summarize = (elements, max_length) ->
-  max_length ?= 150
+  max_length ?= 220
   $(elements).each ->
     el = $(this)
     if el.text().length > max_length + 53
@@ -70,6 +70,7 @@ summarize = (elements, max_length) ->
       el.find('.read-more').click(->
         el.text(el.data('full-text'))
         $(window).trigger('summary-expanded', [el, el.text()])
+        false
       )
 
 $ -> summarize('.summarize')

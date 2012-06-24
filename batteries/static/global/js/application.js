@@ -72,7 +72,7 @@
 
   summarize = function(elements, max_length) {
     if (max_length == null) {
-      max_length = 150;
+      max_length = 220;
     }
     return $(elements).each(function() {
       var el;
@@ -86,7 +86,8 @@
         el.append('<a href="#read-more" class="read-more">more</a>');
         return el.find('.read-more').click(function() {
           el.text(el.data('full-text'));
-          return $(window).trigger('summary-expanded', [el, el.text()]);
+          $(window).trigger('summary-expanded', [el, el.text()]);
+          return false;
         });
       }
     });

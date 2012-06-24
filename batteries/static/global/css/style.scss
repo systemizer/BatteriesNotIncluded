@@ -52,7 +52,7 @@ a {
 }
 
 #hd {
-  font-size: 200%;
+  font-size: 170%;
   font-weight: bold;
   font-family: 'Open Sans', sans-serif;
   line-height: 1.5em;
@@ -69,12 +69,12 @@ a {
     font-weight: normal;
   }
 
-  a:link, a:link:visited {
+  a:link, a:visited {
     color: #eee;
     background: lighten($lo, 5%);
     text-shadow: 0;
     text-decoration: none;
-    @include border-radius(3px);
+    @include border-radius(5px);
     padding: 2px 3px;
   }
   a:link:hover {
@@ -134,7 +134,7 @@ a {
     font-size: 130%;
     float: right;
 
-    a:link, a:link:visited {
+    a:link, a:visited {
       text-decoration: none;
       padding: 5px 3px;
       color: #eee;
