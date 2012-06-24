@@ -143,6 +143,9 @@ $event-border-color: #adadad;
   .event {
     position: relative;
     line-height: 1.5em;
+    h2 {
+        margin-right: 130px;
+    }
     .time {
       font-size: 110%;
     }
@@ -192,6 +195,9 @@ $event-border-color: #adadad;
     width: 450px;
     min-height: 100px;
 
+    h2 {
+        margin-right: 115px;
+    }
     .time {
       font-size: 130%;
     }

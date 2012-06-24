@@ -114,7 +114,7 @@
     {# required vars: image_url, title, time, location, description #}
     <script type="text/template" id="event_template">
       <div class="event">
-        <img src="{{ STATIC_URL }}/<%= image_url %>" width="50" height="50" alt="" />
+        <img src="<%= image_url %>" width="50" height="50" alt="" />
         <h2><%= title %></h2>
         <p class="time"><%= time %></p>
         <p class="location"><a href="http://maps.google.com/maps?q=<%= encodeURIComponent(location) %>"><%= location %></a></p>

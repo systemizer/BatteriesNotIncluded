@@ -125,6 +125,8 @@ h1, h2, h3, h4, h5, h6, .time {
   .event {
     position: relative;
     line-height: 1.5em; }
+    .event h2 {
+      margin-right: 130px; }
     .event .time {
       font-size: 110%; }
     .event .location {
@@ -171,6 +173,8 @@ h1, h2, h3, h4, h5, h6, .time {
     float: left;
     width: 450px;
     min-height: 100px; }
+    .event h2 {
+      margin-right: 115px; }
     .event .time {
       font-size: 130%; }
     .event .actions {
