@@ -177,25 +177,26 @@
       hours = 12;
     }
     return format(str, {
-      year: date.getFullYear(),
-      month: months[date.getMonth()].substring(0, 3),
-      day: date.getDate(),
-      day_th: number_postfix(date.getDate()),
+      year: date.getUTCFullYear(),
+      month: months[date.getUTCMonth()].substring(0, 3),
+      day: date.getUTCDate(),
+      day_th: number_postfix(date.getUTCDate()),
       hour: hours,
-      minute: (date.getMinutes() < 10 ? '0' : '') + date.getMinutes(),
-      apm: date.getHours() < 12 ? 'am' : 'pm'
+      minute: (date.getUTCMinutes() < 10 ? '0' : '') + date.getUTCMinutes(),
+      apm: date.getUTCHours() < 12 ? 'am' : 'pm'
     });
   };
 
   date_range = function(start, end) {
-    var diff, result, str;
+    var diff, real_end, result, str;
+    real_end = end != null;
     if (end == null) {
       end = new Date();
     }
     diff = {
-      year: start.getFullYear() !== end.getFullYear(),
-      month: start.getMonth() !== end.getMonth(),
-      day: start.getDate() !== end.getDate()
+      year: start.getUTCFullYear() !== end.getUTCFullYear(),
+      month: start.getUTCMonth() !== end.getUTCMonth(),
+      day: start.getUTCDate() !== end.getUTCDate()
     };
     str = [];
     if (diff.month) {
@@ -210,25 +211,33 @@
     }
     str = str.join(' ');
     if (str.length) {
-      result = format_date(str, start) + ' - ' + format_date(str, end);
+      result = [format_date(str, start), format_date(str, end)];
     } else {
-      result = ' - ';
+      result = [null, null];
     }
     if (diff.day && !diff.month) {
-      result = format_date('{{ month }} ', start) + result;
+      if (real_end) {
+        result[0] = format_date('{{ month }} ', start) + result[0];
+      }
     }
-    return result.split(' - ');
+    if (!real_end) {
+      result[1] = null;
+    }
+    console.log('date_range', result, real_end);
+    return result;
   };
 
   time_range = function(start, end) {
-    var diff, result, str;
+    var diff, real_end, result, str;
+    real_end = end != null;
+    console.log(real_end, end);
     if (end == null) {
       end = new Date();
     }
     diff = {
-      hour: start.getHours() !== end.getHours(),
-      minute: start.getMinutes() !== end.getMinutes(),
-      apm: (start.getHours() <= 12) !== (end.getHours() <= 12)
+      hour: start.getUTCHours() !== end.getUTCHours(),
+      minute: start.getUTCMinutes() !== end.getUTCMinutes(),
+      apm: (start.getUTCHours() <= 12) !== (end.getUTCHours() <= 12)
     };
     str = [];
     if (diff.hour || diff.minute) {
@@ -242,11 +251,19 @@
       str[str.length - 1] = str[str.length - 1] + '{{ apm }}';
     }
     str = str.join(' ');
-    result = format_date(str, start) + ' - ' + format_date(str, end);
+    result = [format_date(str, start), format_date(str, end)];
     if (!diff.apm) {
-      result += format_date('{{ apm }}', end);
+      if (real_end) {
+        result[1] += format_date('{{ apm }}', start);
+      } else {
+        result[0] += format_date('{{ apm }}', start);
+      }
     }
-    return result.split(' - ');
+    if (!real_end) {
+      result[1] = null;
+    }
+    console.log('time_range', result, real_end);
+    return result;
   };
 
   time_until = function(start, reference) {
@@ -254,10 +271,10 @@
     if (reference == null) {
       reference = new Date();
     }
-    if (start.getFullYear() !== reference.getFullYear() || start.getMonth() !== reference.getMonth() || start.getDate() !== reference.getDate()) {
+    if (start.getUTCFullYear() !== reference.getUTCFullYear() || start.getUTCMonth() !== reference.getUTCMonth() || start.getUTCDate() !== reference.getUTCDate()) {
       return '';
     }
-    diff = (start.getHours() * 60 + start.getMinutes()) - (reference.getHours() * 60 + reference.getMinutes());
+    diff = (start.getUTCHours() * 60 + start.getUTCMinutes()) - (reference.getUTCHours() * 60 + reference.getUTCMinutes());
     hours = Math.floor(diff / 60);
     minutes = diff % 60;
     s = '';
@@ -302,7 +319,7 @@
         type: 'get',
         dataType: 'json',
         success: function(data) {
-          var date_end, date_start, end_time, pos, results, row, start_time, time_end, time_start, timeuntil, _i, _len, _ref;
+          var date_end, date_start, end_time, lat, lon, results, row, start_time, time_end, time_start, timeuntil, _i, _len, _ref;
           target.empty();
           _ref = data.results;
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -313,6 +330,7 @@
             } else {
               end_time = null;
             }
+            console.log(row, end_time);
             results = date_range(start_time, end_time);
             date_start = results[0];
             date_end = results[1];
@@ -320,11 +338,14 @@
             time_start = results[0];
             time_end = results[1];
             timeuntil = time_until(start_time);
-            pos = row.location_gps.split(',');
+            results = row.location_gps.split(',');
+            lat = parseFloat(results[0]);
+            lon = parseFloat(results[1]);
             target.append(templates.event_template({
               h: escapeHTML,
-              lat: parseInt(pos[0], 10),
-              lon: parseInt(pos[1], 10),
+              has_coords: !isNaN(lat) && !isNaN(lon),
+              lat: lat,
+              lon: lon,
               url: row.url,
               image_url: (row.pic_square != null) && $.trim(row.pic_square) !== '' ? row.pic_square : null,
               title: row.name,

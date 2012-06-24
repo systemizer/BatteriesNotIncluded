@@ -159,21 +159,22 @@ format_date = (str, date) ->
   if hours == 0
     hours = 12
   format(str,
-    year: date.getFullYear()
-    month: months[date.getMonth()].substring(0, 3)
-    day: date.getDate()
-    day_th: number_postfix(date.getDate())
+    year: date.getUTCFullYear()
+    month: months[date.getUTCMonth()].substring(0, 3)
+    day: date.getUTCDate()
+    day_th: number_postfix(date.getUTCDate())
     hour: hours
-    minute: (if date.getMinutes() < 10 then '0' else '') + date.getMinutes()
-    apm: if date.getHours() < 12 then 'am' else 'pm'
+    minute: (if date.getUTCMinutes() < 10 then '0' else '') + date.getUTCMinutes()
+    apm: if date.getUTCHours() < 12 then 'am' else 'pm'
   )
 
 date_range = (start, end) ->
+  real_end = end?
   end ?= new Date()
   diff = {
-    year: start.getFullYear() != end.getFullYear()
-    month: start.getMonth() != end.getMonth()
-    day: start.getDate() != end.getDate()
+    year: start.getUTCFullYear() != end.getUTCFullYear()
+    month: start.getUTCMonth() != end.getUTCMonth()
+    day: start.getUTCDate() != end.getUTCDate()
   }
   str = []
   if diff.month
@@ -185,19 +186,25 @@ date_range = (start, end) ->
     str.push('{{ year }}')
   str = str.join(' ')
   if str.length
-    result = format_date(str, start) + ' - ' + format_date(str, end)
+    result = [format_date(str, start), format_date(str, end)]
   else
-    result = ' - '
+    result = [null, null]
   if diff.day and not diff.month
-    result = format_date('{{ month }} ', start) + result
-  result.split(' - ')
+    if real_end
+      result[0] = format_date('{{ month }} ', start) + result[0]
+  if not real_end
+    result[1] = null
+  console.log('date_range', result, real_end)
+  result
 
 time_range = (start, end) ->
+  real_end = end?
+  console.log(real_end, end)
   end ?= new Date()
   diff = {
-    hour: start.getHours() != end.getHours()
-    minute: start.getMinutes() != end.getMinutes()
-    apm: (start.getHours() <= 12) != (end.getHours() <= 12)
+    hour: start.getUTCHours() != end.getUTCHours()
+    minute: start.getUTCMinutes() != end.getUTCMinutes()
+    apm: (start.getUTCHours() <= 12) != (end.getUTCHours() <= 12)
   }
   str = []
   if diff.hour or diff.minute
@@ -208,16 +215,22 @@ time_range = (start, end) ->
   if diff.apm
     str[str.length - 1] = str[str.length - 1] + '{{ apm }}'
   str = str.join(' ')
-  result = format_date(str, start) + ' - ' + format_date(str, end)
+  result = [format_date(str, start), format_date(str, end)]
   if not diff.apm
-    result += format_date('{{ apm }}', end)
-  result.split(' - ')
+    if real_end
+      result[1] += format_date('{{ apm }}', start)
+    else
+      result[0] += format_date('{{ apm }}', start)
+  if not real_end
+    result[1] = null
+  console.log('time_range', result, real_end)
+  result
 
 time_until = (start, reference) ->
   reference ?= new Date()
-  if (start.getFullYear() != reference.getFullYear() or start.getMonth() != reference.getMonth() or start.getDate() != reference.getDate())
+  if (start.getUTCFullYear() != reference.getUTCFullYear() or start.getUTCMonth() != reference.getUTCMonth() or start.getUTCDate() != reference.getUTCDate())
     return ''
-  diff = (start.getHours() * 60 + start.getMinutes()) - (reference.getHours() * 60 + reference.getMinutes())
+  diff = (start.getUTCHours() * 60 + start.getUTCMinutes()) - (reference.getUTCHours() * 60 + reference.getUTCMinutes())
   hours = Math.floor(diff / 60)
   minutes = diff % 60
   s = ''
@@ -257,6 +270,7 @@ $ ->
             end_time = new Date(row.end_time * 1000)
           else
             end_time = null
+          console.log(row, end_time)
           results = date_range(start_time, end_time)
           date_start = results[0]
           date_end = results[1]
@@ -265,12 +279,15 @@ $ ->
           time_end = results[1]
           timeuntil = time_until(start_time)
 
-          pos = row.location_gps.split(',')
+          results = row.location_gps.split(',')
+          lat = parseFloat(results[0])
+          lon = parseFloat(results[1])
 
           target.append(templates.event_template(
             h: escapeHTML
-            lat: parseInt(pos[0], 10)
-            lon: parseInt(pos[1], 10)
+            has_coords: not isNaN(lat) and not isNaN(lon)
+            lat: lat
+            lon: lon
             url: row.url
             image_url: if row.pic_square? and $.trim(row.pic_square) != '' then row.pic_square else null
             title: row.name
