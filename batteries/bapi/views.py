@@ -3,10 +3,15 @@ from django.template import RequestContext
 from django.http import HttpResponse, Http404
 from django.conf import settings
 from django.core.cache import cache
+from django.contrib.auth.decorators import login_required
+
+from django_facebook.decorators import facebook_required
+from django_facebook.api import get_persistent_graph
 
 from batteries.bapi.utils import provider_request_map
 
 import grequests
+import requests
 from gevent import Greenlet
 
 import urllib
@@ -145,3 +150,13 @@ def events_eventbrite(request):
 
     return HttpResponse(json.dumps({'results':result_json}))
 
+
+@login_required
+@facebook_required(scope='publish_actions')
+def checkin(request):
+    fb = get_persistent_graph(request)
+    fb.set("me/maivnapp:check_in",website=request.GET.get("event_url"))
+    return HttpResponse("OK")
+
+               
+    
