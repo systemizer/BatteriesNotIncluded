@@ -54,6 +54,18 @@ a:visited {
     color: #fff;
     background: #0b338b; }
 
+#ft {
+  text-align: center;
+  font-size: 110%;
+  color: #777;
+  padding: 1em 0; }
+  #ft a:link, #ft a:visited {
+    color: #77c;
+    text-decoration: none; }
+  #ft a:hover {
+    color: #99f;
+    text-decoration: underline; }
+
 .clear {
   clear: both; }
 
