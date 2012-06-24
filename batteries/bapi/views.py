@@ -22,10 +22,13 @@ def events(request):
     lon = request.GET.get("lon")
     cur_time = int(time.time())
 
+    num_results = int(request.GET.get("num_results")) if request.GET.get("num_results") else 10
+    offset = int(request.GET.get("offset")) if request.GET.get("offset") else 0
+
     cache_key = "%s%s" % (int(float(lat)*100)/100.00,int(float(lon)*100)/100.00)
     cached_value = cache.get(cache_key)
     if cached_value:
-        return HttpResponse(json.dumps({'results':cached_value}))
+        return HttpResponse(json.dumps({'results':cached_value[offset*num_results:num_results*(offset+1)]}))
     
 
     g1 = Greenlet.spawn(provider_request_map['eventbrite'],lat,lon,cur_time)
@@ -34,8 +37,10 @@ def events(request):
 
     data = g3.get() + g2.get() + g1.get()
     sorted(data,key = lambda d: d['start_time'])
+
     cache.set(cache_key,data,60*10)
-    return HttpResponse(json.dumps({'results':data}))
+
+    return HttpResponse(json.dumps({'results':data[offset*num_results:num_results*(offset+1)]}))
 
 def events_eventful(request):
     lat = request.GET.get("lat")

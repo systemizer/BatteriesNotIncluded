@@ -6,6 +6,7 @@ import eventful
 import requests
 
 WITHIN = 2 #miles within to accept events (only required by some providers)
+MAX_RESULTS_PER_PROVIDER = 20
 
 def convert_utc_to_epoch(utc_time):
     if "UTC" in utc_time:
@@ -14,7 +15,7 @@ def convert_utc_to_epoch(utc_time):
 
 def eventful_request(lat,lon,cur_time):
     api = eventful.API(settings.EVENTFUL_API_KEY)
-    events = api.call("/events/search",location="%s,%s" % (lat,lon),date="Today",within=WITHIN,page_size=10)
+    events = api.call("/events/search",location="%s,%s" % (lat,lon),date="Today",within=WITHIN,page_size=MAX_RESULTS_PER_PROVIDER)
 
     #if eventful only has one result, it doesnt give back an array. BAD!
     if events['total_items'] == '0':
@@ -40,6 +41,7 @@ def yahoo_request(lat,lon,cur_time):
         'api_key':settings.YAHOOUPCOMING_API_KEY,
         'location':"%s,%s" % (lat,lon),
         'quick_date':'today',
+        'per_page': MAX_RESULTS_PER_PROVIDER,
         'radius':'%smi.' % WITHIN,
         'format':'json'
         }    
@@ -73,6 +75,7 @@ def eventbrite_request(lat,lon,cur_time):
     payload = {'app_key':settings.EVENTBRITE_API_KEY,
                'latitude':lat,
                'longitude':lon,
+               'max':MAX_RESULTS_PER_PROVIDER,
                'within':WITHIN,
                'date':'Today',
                }
