@@ -9,6 +9,7 @@ import grequests
 import requests
 import urllib
 import eventful
+import eventbrite
 import time
 import json
 
@@ -103,3 +104,34 @@ def events_yahoo(request):
     return HttpResponse(json.dumps({'results':result_json}))
     
 
+def events_eventbrite(request):
+    lat = request.GET.get("lat")
+    lon = request.GET.get("lon")
+
+    base_url = "https://www.eventbrite.com/json/event_search"
+    payload = {'app_key':settings.EVENTBRITE_API_KEY,
+               'latitude':lat,
+               'longitude':lon,
+               'within':100,
+               'date':'This Week',
+               'max':10,
+               }
+    url = "%s?%s" % (base_url,urllib.urlencode(payload))
+    result = requests.get(url)
+
+
+
+    result_json = [{
+            'eid':event['event']['id'],
+            'start_time':event['event']['start_date'],
+            'end_time':event['event']['end_date'],
+            'location':event['event']['venue']['name'],
+            'name':event['event']['title'],
+            'description':event['event']['description'],
+            'pic_square':event['event']['logo'] if event['event'].has_key("logo") else ""
+            } 
+                   #the first result in result.json['events'] is always the summary.
+                   for event in result.json['events'][1:]]
+
+    return HttpResponse(json.dumps({'results':result_json}))
+    
