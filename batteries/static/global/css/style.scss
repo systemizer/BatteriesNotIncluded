@@ -1,3 +1,9 @@
+$hi: #4580FF;
+$lo: #0F45BA;
+$event-border-color: #bbb;
+
+@import url(http://fonts.googleapis.com/css?family=Open+Sans:400,700);
+
 @mixin gradient ($start, $end) {
   background-color: $end;
   background-image: url(images/fallback-gradient.png); 
@@ -17,7 +23,7 @@
 }
 
 html {
-  @include gradient(#eee, #ddd);
+  @include gradient(#eee, #ccc);
   width: 100%;
   min-height: 100%;
 }
@@ -25,7 +31,9 @@ html {
 body {
   font-size: 11px;
   font-family: Arial, Helvetica, sans-serif;
-  padding: 5px;
+}
+
+#wrap {
 }
 
 a {
@@ -40,42 +48,60 @@ a {
   }
 }
 
-h1, h2, h3, h4, h5, h6, .time {
-  font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
+#hd, h1, h2, h3, h4, h5, h6, .time {
 }
 
 #hd {
-  font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
   font-size: 200%;
-  line-height: 1em;
   font-weight: bold;
+  font-family: 'Open Sans', sans-serif;
+  line-height: 1.5em;
   text-align: center;
+  padding: 5px;
+  color: #fff;
+  text-shadow: 1px 1px 2px #336;
+  background: desaturate($hi, 10%) url('../bg-light.png') repeat;
+  border-bottom: 12px solid $lo;
 
   p {
+    color: #eee;
     font-size: 75%;
     font-weight: normal;
   }
+
+  a:link, a:link:visited {
+    color: #eee;
+    background: lighten($lo, 5%);
+    text-shadow: 0;
+    text-decoration: none;
+    @include border-radius(3px);
+    padding: 2px 3px;
+  }
+  a:link:hover {
+    color: #fff;
+    background: darken($lo, 10%);
+  }
 }
 
-$event-border-color: #adadad;
-
-.eol { /* end of event lists */
-  clear: both;
-  border: 0;
+.clear { clear: both; }
+.line {
   border-top: 1px solid $event-border-color;
+}
+
+.spinner {
+  float: left;
+  position: relative;
+  left: 50%;
 }
 
 .event {
   list-style-type: none;
-  margin: 0.5em 0;
-  padding: 0.5em 0;
+  padding: 0.5em 7px;
   clear: both;
   line-height: 1.5em;
 
-  border-top: 1px solid $event-border-color;
-
   img {
-    padding: 0 5px;
+    padding: 0 5px 0 0;
     margin-bottom: 5px;
     width: 50px;
     float: left;
@@ -83,19 +109,24 @@ $event-border-color: #adadad;
 
   h2 {
     font-weight: bold;
-    font-size: 170%;
+    font-size: 130%;
+    line-height: 1.1em;
   }
-  .location {
-    font-size: 140%;
+  .content {
+    margin-left: 60px;
   }
   .time {
-    font-size: 140%;
+    font-size: 130%;
+    color: #111;
+  }
+  .location {
+    font-size: 130%;
   }
   .description {
     font-size: 110%;
-    padding-top: 0.2em;
-    margin-left: 60px;
+    padding-top: 0.5em;
     line-height: 1.2em;
+    color: #333;
   }
   .actions {
     margin: 1em 0 0 60px;
@@ -103,23 +134,20 @@ $event-border-color: #adadad;
     font-size: 130%;
     float: right;
 
-    $hi: #36a;
-    $lo: #13a;
-    a:link, a:visited {
+    a:link, a:link:visited {
       text-decoration: none;
-      padding: 5px;
+      padding: 5px 3px;
       color: #eee;
-      border: 1px solid #13f;
-      @include gradient($hi, $lo);
-      @include border-radius(3px);
+      border: 1px solid darken($lo, 5%);
+      @include gradient(lighten($lo, 10%), $lo);
+      @include border-radius(5px);
     }
 
     a:hover {
-      $lighten: 5%;
+      $modifier: 5%;
       color: #fff;
-      border: 1px solid lighten($lo, $lighten);
-      @include gradient(lighten($hi, $lighten), lighten($lo, $lighten));
-      @include border-radius(3px);
+      border: 1px solid lighten($lo, $modifier);
+      @include gradient(lighten($lo, $modifier + 10%), lighten($lo, $modifier));
     }
   }
 }
@@ -130,31 +158,29 @@ $event-border-color: #adadad;
 @media screen and (min-width: 480px) {
 }
 
+/* iPad Resolution */
 @media screen and (min-width: 768px) {
   body {
     font-size: 12px;
   }
   .short { display: none; }
   .medium { display: block; }
-  .eol {
-    position: relative;
-    top: 1em;
-  }
   .event {
     position: relative;
     line-height: 1.5em;
+
     h2 {
-        margin-right: 130px;
+      margin-right: 130px;
     }
-    .time {
-      font-size: 110%;
+    .content {
+      margin-left: 60px;
     }
     .location {
-      font-size: 110%;
+      font-size: 130%;
     }
     .description {
-      padding-top: 0;
-      font-size: 100%;
+      padding: 0.5em 0;
+      font-size: 110%;
     }
     .share, .checkin { float: none }
     .actions {
@@ -173,6 +199,9 @@ $event-border-color: #adadad;
   body {
     font-size: 11px;
   }
+  #hd {
+    padding: 0.5em;
+  }
   #wrap {
     margin: auto;
     width: 920px;
@@ -180,11 +209,7 @@ $event-border-color: #adadad;
   .medium { display: none; }
   .long { display: block; }
   .events {
-    border-top: 1px solid #adadad;
     padding-top: 1em;
-  }
-  .description {
-    font-size: 110%;
   }
   .event {
     border: 0;
@@ -196,13 +221,21 @@ $event-border-color: #adadad;
     min-height: 100px;
 
     h2 {
-        margin-right: 115px;
+      margin-right: 110px;
+      line-height: 1em;
+      font-size: 140%;
+    }
+    .location {
+      font-size: 130%;
     }
     .time {
       font-size: 130%;
     }
+    .description {
+      font-size: 110%;
+    }
     .actions {
-      top: 1em;
+      top: 1.3em;
       font-size: 110%;
     }
   }
