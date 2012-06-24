@@ -14,8 +14,14 @@ framework.
 
 """
 import os
+import sys
 
+from gevent import monkey
+monkey.patch_all()
+
+sys.path.insert(0,os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)) ,'..')))
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "batteries.settings")
+os.environ['PYTHON_EGG_CACHE'] = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)) ,'.python-eggs'))
 
 # This application object is used by any WSGI server configured to use this
 # file. This includes Django's development server, if the WSGI_APPLICATION

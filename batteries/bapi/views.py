@@ -20,6 +20,9 @@ def home(request):
 def events(request):
     lat = request.GET.get("lat")
     lon = request.GET.get("lon")
+    if not lat or not lon:
+        raise Http404
+
     cur_time = int(time.time())
 
     num_results = int(request.GET.get("num_results")) if request.GET.get("num_results") else 10
