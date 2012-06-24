@@ -21,10 +21,15 @@ a:active {
 a:visited {
   color: #33c; }
 
+h1, h2, h3, h4, h5, h6, .time {
+  font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif; }
+
 #hd {
+  font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
   font-size: 200%;
   line-height: 1em;
-  font-weight: bold; }
+  font-weight: bold;
+  text-align: center; }
   #hd p {
     font-size: 75%;
     font-weight: normal; }
@@ -51,22 +56,51 @@ a:visited {
     font-weight: bold;
     font-size: 170%; }
   .event .location {
-    font-size: 135%; }
+    font-size: 140%; }
   .event .time {
-    font-size: 135%; }
+    font-size: 140%; }
   .event .description {
     font-size: 110%;
     padding-top: 0.2em;
     margin-left: 60px;
     line-height: 1.2em; }
   .event .actions {
-    margin-left: 60px;
-    padding: 0.5em 0;
-    font-size: 130%; }
-  .event .checkin {
+    margin: 1em 0 0 60px;
+    padding: 0 0 1em 0;
+    font-size: 130%;
     float: right; }
-  .event .share {
-    float: left; }
+    .event .actions a:link, .event .actions a:visited {
+      text-decoration: none;
+      padding: 5px;
+      color: #eee;
+      border: 1px solid #13f;
+      background-color: #1133aa;
+      background-image: url(images/fallback-gradient.png);
+      background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#3366aa), to(#1133aa));
+      background-image: -webkit-linear-gradient(top, #3366aa, #1133aa);
+      background-image: -moz-linear-gradient(top, #3366aa, #1133aa);
+      background-image: -ms-linear-gradient(top, #3366aa, #1133aa);
+      background-image: -o-linear-gradient(top, #3366aa, #1133aa);
+      -webkit-border-radius: 3px;
+      -moz-border-radius: 3px;
+      -o-border-radius: 3px;
+      -ms-border-radius: 3px;
+      border-radius: 3px; }
+    .event .actions a:hover {
+      color: #fff;
+      border: 1px solid #133ac1;
+      background-color: #133ac1;
+      background-image: url(images/fallback-gradient.png);
+      background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#3972be), to(#133ac1));
+      background-image: -webkit-linear-gradient(top, #3972be, #133ac1);
+      background-image: -moz-linear-gradient(top, #3972be, #133ac1);
+      background-image: -ms-linear-gradient(top, #3972be, #133ac1);
+      background-image: -o-linear-gradient(top, #3972be, #133ac1);
+      -webkit-border-radius: 3px;
+      -moz-border-radius: 3px;
+      -o-border-radius: 3px;
+      -ms-border-radius: 3px;
+      border-radius: 3px; }
 
 .long {
   display: none; }
@@ -84,9 +118,6 @@ a:visited {
   .medium {
     display: block; }
 
-  #hd {
-    text-align: center; }
-
   .eol {
     position: relative;
     top: 1em; }
@@ -99,17 +130,19 @@ a:visited {
     .event .location {
       font-size: 110%; }
     .event .description {
-      padding-top: 0; }
+      padding-top: 0;
+      font-size: 100%; }
     .event .share, .event .checkin {
       float: none; }
     .event .actions {
       position: absolute;
       right: 0;
-      top: 0;
+      top: 0.75em;
+      float: static;
       padding: 0;
       margin: 0 1em;
       font-size: 110%; } }
-@media screen and (min-width: 992px) {
+@media screen and (min-width: 1024px) {
   body {
     font-size: 11px; }
 
@@ -127,13 +160,25 @@ a:visited {
     border-top: 1px solid #adadad;
     padding-top: 1em; }
 
+  .description {
+    font-size: 110%; }
+
   .event {
     border: 0;
     margin: 0;
-    padding: 10px 0;
+    padding: 1em 5px;
     clear: none;
     float: left;
-    width: 300px; }
+    width: 450px;
+    min-height: 100px; }
+    .event .time {
+      font-size: 130%; }
     .event .actions {
-      top: 10px;
-      font-size: 120%; } }
+      top: 1em;
+      font-size: 110%; } }
+@media screen and (min-width: 1350px) {
+  #wrap {
+    width: 1200px; }
+
+  .event {
+    width: 390px; } }

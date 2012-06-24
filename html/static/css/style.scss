@@ -8,6 +8,14 @@
   background-image:      -o-linear-gradient(top, $start, $end);
 }
 
+@mixin border-radius ($p) {
+  -webkit-border-radius: $p;
+  -moz-border-radius: $p;
+  -o-border-radius: $p;
+  -ms-border-radius: $p;
+  border-radius: $p;
+}
+
 html {
   @include gradient(#eee, #ddd);
   width: 100%;
@@ -32,10 +40,16 @@ a {
   }
 }
 
+h1, h2, h3, h4, h5, h6, .time {
+  font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
+}
+
 #hd {
+  font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
   font-size: 200%;
   line-height: 1em;
   font-weight: bold;
+  text-align: center;
 
   p {
     font-size: 75%;
@@ -72,10 +86,10 @@ $event-border-color: #adadad;
     font-size: 170%;
   }
   .location {
-    font-size: 135%;
+    font-size: 140%;
   }
   .time {
-    font-size: 135%;
+    font-size: 140%;
   }
   .description {
     font-size: 110%;
@@ -84,20 +98,37 @@ $event-border-color: #adadad;
     line-height: 1.2em;
   }
   .actions {
-    margin-left: 60px;
-    padding: 0.5em 0;
+    margin: 1em 0 0 60px;
+    padding: 0 0 1em 0;
     font-size: 130%;
-  }
-  .checkin {
     float: right;
-  }
-  .share {
-    float: left;
+
+    $hi: #36a;
+    $lo: #13a;
+    a:link, a:visited {
+      text-decoration: none;
+      padding: 5px;
+      color: #eee;
+      border: 1px solid #13f;
+      @include gradient($hi, $lo);
+      @include border-radius(3px);
+    }
+
+    a:hover {
+      $lighten: 5%;
+      color: #fff;
+      border: 1px solid lighten($lo, $lighten);
+      @include gradient(lighten($hi, $lighten), lighten($lo, $lighten));
+      @include border-radius(3px);
+    }
   }
 }
 
 .long { display: none; }
 .medium { display: none; }
+
+@media screen and (min-width: 480px) {
+}
 
 @media screen and (min-width: 768px) {
   body {
@@ -105,9 +136,6 @@ $event-border-color: #adadad;
   }
   .short { display: none; }
   .medium { display: block; }
-  #hd {
-    text-align: center;
-  }
   .eol {
     position: relative;
     top: 1em;
@@ -123,12 +151,14 @@ $event-border-color: #adadad;
     }
     .description {
       padding-top: 0;
+      font-size: 100%;
     }
     .share, .checkin { float: none }
     .actions {
       position: absolute;
       right: 0;
-      top: 0;
+      top: 0.75em;
+      float: static;
       padding: 0;
       margin: 0 1em;
       font-size: 110%;
@@ -136,7 +166,7 @@ $event-border-color: #adadad;
   }
 }
 
-@media screen and (min-width: 992px) {
+@media screen and (min-width: 1024px) {
   body {
     font-size: 11px;
   }
@@ -150,17 +180,33 @@ $event-border-color: #adadad;
     border-top: 1px solid #adadad;
     padding-top: 1em;
   }
+  .description {
+    font-size: 110%;
+  }
   .event {
     border: 0;
     margin: 0;
-    padding: 10px 0;
+    padding: 1em 5px;
     clear: none;
     float: left;
-    width: 300px;
+    width: 450px;
+    min-height: 100px;
 
-    .actions {
-      top: 10px;
-      font-size: 120%;
+    .time {
+      font-size: 130%;
     }
+    .actions {
+      top: 1em;
+      font-size: 110%;
+    }
+  }
+}
+
+@media screen and (min-width: 1350px) {
+  #wrap {
+    width: 1200px;
+  }
+  .event {
+    width: 390px;
   }
 }
