@@ -4,5 +4,6 @@ urlpatterns = patterns(
     'batteries.bapi.views',
     url(r'^$','home'),
     url(r'^events/$','events'),
+    url(r'^events/eventful/$','events_eventful'),
 )
                        

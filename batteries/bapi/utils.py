@@ -11,3 +11,4 @@ def generate_meetup_url(lat,lon,cur_time):
 provider_url_generators = {
     'meetup':generate_meetup_url,
 }
+
