@@ -67,7 +67,7 @@
           <p class="description summarize"><%= h(description) %></p>
           <p class="actions">
           <a class="share" href="https://www.facebook.com/sharer.php?u=<%= encodeURIComponent(url) %>&t=<%= encodeURIComponent(title) %>">Share</a>
-            <a class="checkin" href="">Check in</a>
+            <a class="checkin" href="/api/checkin/?event_url=<%= url %>">Check in</a>
           </p>
           <div class="line clear"></div>
         </div>
