@@ -59,6 +59,7 @@ $ -> window.templates = templates = find_templates('script[type="text/template"]
 
 # summarize
 summarize = (elements, max_length) ->
+  max_length ?= 150
   $(elements).each ->
     el = $(this)
     if el.text().length > max_length + 53
@@ -71,7 +72,7 @@ summarize = (elements, max_length) ->
         $(window).trigger('summary-expanded', [el, el.text()])
       )
 
-$ -> summarize('.summarize', 250)
+$ -> summarize('.summarize')
 
 # masonry grid flow
 $ ->
@@ -170,30 +171,43 @@ time_range = (start, end) ->
   str = str.join(' ')
   result = format_date(str, start) + ' - ' + format_date(str, end)
   if not diff.apm
-    result + format_date(' {{ apm }}', end)
+    result + format_date('{{ apm }}', end)
   else
     result
 
 # templating from JSON
 $ ->
   target = $('.events')
-  console.log('ajax request...')
-  $.ajax(
-    url: '/api/events/'
-    type: 'get'
-    dataType: 'json'
-    success: (data) ->
-      target.empty()
-      for row in data.results
-        start_time = new Date(row.start_time * 1000)
-        end_time = new Date(row.end_time * 1000)
-        target.append(templates.event_template(
-          image_url: row.pic_square
-          title: row.name
-          time: time_range(start_time, end_time)
-          location: row.location
-          description: row.description
-        ))
-      summarize('.summarize', 250)
-  )
+  get_events = (position) ->
+    data = {}
+    if position?
+      data = {
+        lat: position.coords.latitude
+        lon: position.coords.longitude
+      }
+    $.ajax(
+      url: '/api/events/'
+      data: data
+      type: 'get'
+      dataType: 'json'
+      success: (data) ->
+        target.empty()
+        for row in data.results
+          start_time = new Date(row.start_time * 1000)
+          end_time = new Date(row.end_time * 1000)
+          target.append(templates.event_template(
+            image_url: row.pic_square
+            title: row.name
+            time: time_range(start_time, end_time)
+            location: row.location
+            description: row.description
+          ))
+        summarize('.summarize')
+      error: (req, stat, err) ->
+        console.log(req, stat, err)
+    )
+  if navigator.geolocation?
+    navigator.geolocation.getCurrentPosition(get_events, -> get_events())
+  else
+    get_events()
 

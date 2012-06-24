@@ -1,18 +1,18 @@
+@import url(http://fonts.googleapis.com/css?family=Open+Sans:400,700);
 html {
-  background-color: #dddddd;
+  background-color: #cccccc;
   background-image: url(images/fallback-gradient.png);
-  background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#eeeeee), to(#dddddd));
-  background-image: -webkit-linear-gradient(top, #eeeeee, #dddddd);
-  background-image: -moz-linear-gradient(top, #eeeeee, #dddddd);
-  background-image: -ms-linear-gradient(top, #eeeeee, #dddddd);
-  background-image: -o-linear-gradient(top, #eeeeee, #dddddd);
+  background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#eeeeee), to(#cccccc));
+  background-image: -webkit-linear-gradient(top, #eeeeee, #cccccc);
+  background-image: -moz-linear-gradient(top, #eeeeee, #cccccc);
+  background-image: -ms-linear-gradient(top, #eeeeee, #cccccc);
+  background-image: -o-linear-gradient(top, #eeeeee, #cccccc);
   width: 100%;
   min-height: 100%; }
 
 body {
   font-size: 11px;
-  font-family: Arial, Helvetica, sans-serif;
-  padding: 5px; }
+  font-family: Arial, Helvetica, sans-serif; }
 
 a:link {
   color: #009; }
@@ -21,86 +21,105 @@ a:active {
 a:visited {
   color: #33c; }
 
-h1, h2, h3, h4, h5, h6, .time {
-  font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif; }
-
 #hd {
-  font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
   font-size: 200%;
-  line-height: 1em;
   font-weight: bold;
-  text-align: center; }
+  font-family: 'Open Sans', sans-serif;
+  line-height: 1.5em;
+  text-align: center;
+  padding: 5px;
+  color: #fff;
+  text-shadow: 1px 1px 2px #336;
+  background: #4e83f6 url("../bg-light.png") repeat;
+  border-bottom: 12px solid #0f45ba; }
   #hd p {
+    color: #eee;
     font-size: 75%;
     font-weight: normal; }
+  #hd a:link, #hd a:link:visited {
+    color: #eee;
+    background: #114ed2;
+    text-shadow: 0;
+    text-decoration: none;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    -o-border-radius: 3px;
+    -ms-border-radius: 3px;
+    border-radius: 3px;
+    padding: 2px 3px; }
+  #hd a:link:hover {
+    color: #fff;
+    background: #0b338b; }
 
-.eol {
-  /* end of event lists */
-  clear: both;
-  border: 0;
-  border-top: 1px solid #adadad; }
+.clear {
+  clear: both; }
+
+.line {
+  border-top: 1px solid #bbbbbb; }
+
+.spinner {
+  float: left;
+  position: relative;
+  left: 50%; }
 
 .event {
   list-style-type: none;
-  margin: 0.5em 0;
-  padding: 0.5em 0;
+  padding: 0.5em 7px;
   clear: both;
-  line-height: 1.5em;
-  border-top: 1px solid #adadad; }
+  line-height: 1.5em; }
   .event img {
-    padding: 0 5px;
+    padding: 0 5px 0 0;
     margin-bottom: 5px;
     width: 50px;
     float: left; }
   .event h2 {
     font-weight: bold;
-    font-size: 170%; }
-  .event .location {
-    font-size: 140%; }
+    font-size: 130%;
+    line-height: 1.1em; }
+  .event .content {
+    margin-left: 60px; }
   .event .time {
-    font-size: 140%; }
+    font-size: 130%;
+    color: #111; }
+  .event .location {
+    font-size: 130%; }
   .event .description {
     font-size: 110%;
-    padding-top: 0.2em;
-    margin-left: 60px;
-    line-height: 1.2em; }
+    padding-top: 0.5em;
+    line-height: 1.2em;
+    color: #333; }
   .event .actions {
     margin: 1em 0 0 60px;
     padding: 0 0 1em 0;
     font-size: 130%;
     float: right; }
-    .event .actions a:link, .event .actions a:visited {
+    .event .actions a:link, .event .actions a:link:visited {
       text-decoration: none;
-      padding: 5px;
+      padding: 5px 3px;
       color: #eee;
-      border: 1px solid #13f;
-      background-color: #1133aa;
+      border: 1px solid #0d3ca2;
+      background-color: #0f45ba;
       background-image: url(images/fallback-gradient.png);
-      background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#3366aa), to(#1133aa));
-      background-image: -webkit-linear-gradient(top, #3366aa, #1133aa);
-      background-image: -moz-linear-gradient(top, #3366aa, #1133aa);
-      background-image: -ms-linear-gradient(top, #3366aa, #1133aa);
-      background-image: -o-linear-gradient(top, #3366aa, #1133aa);
-      -webkit-border-radius: 3px;
-      -moz-border-radius: 3px;
-      -o-border-radius: 3px;
-      -ms-border-radius: 3px;
-      border-radius: 3px; }
+      background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#1357e9), to(#0f45ba));
+      background-image: -webkit-linear-gradient(top, #1357e9, #0f45ba);
+      background-image: -moz-linear-gradient(top, #1357e9, #0f45ba);
+      background-image: -ms-linear-gradient(top, #1357e9, #0f45ba);
+      background-image: -o-linear-gradient(top, #1357e9, #0f45ba);
+      -webkit-border-radius: 5px;
+      -moz-border-radius: 5px;
+      -o-border-radius: 5px;
+      -ms-border-radius: 5px;
+      border-radius: 5px; }
     .event .actions a:hover {
       color: #fff;
-      border: 1px solid #133ac1;
-      background-color: #133ac1;
+      border: 1px solid #114ed2;
+      background-color: #114ed2;
       background-image: url(images/fallback-gradient.png);
-      background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#3972be), to(#133ac1));
-      background-image: -webkit-linear-gradient(top, #3972be, #133ac1);
-      background-image: -moz-linear-gradient(top, #3972be, #133ac1);
-      background-image: -ms-linear-gradient(top, #3972be, #133ac1);
-      background-image: -o-linear-gradient(top, #3972be, #133ac1);
-      -webkit-border-radius: 3px;
-      -moz-border-radius: 3px;
-      -o-border-radius: 3px;
-      -ms-border-radius: 3px;
-      border-radius: 3px; }
+      background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#2866ee), to(#114ed2));
+      background-image: -webkit-linear-gradient(top, #2866ee, #114ed2);
+      background-image: -moz-linear-gradient(top, #2866ee, #114ed2);
+      background-image: -ms-linear-gradient(top, #2866ee, #114ed2);
+      background-image: -o-linear-gradient(top, #2866ee, #114ed2); }
 
 .long {
   display: none; }
@@ -108,6 +127,7 @@ h1, h2, h3, h4, h5, h6, .time {
 .medium {
   display: none; }
 
+/* iPad Resolution */
 @media screen and (min-width: 768px) {
   body {
     font-size: 12px; }
@@ -118,22 +138,18 @@ h1, h2, h3, h4, h5, h6, .time {
   .medium {
     display: block; }
 
-  .eol {
-    position: relative;
-    top: 1em; }
-
   .event {
     position: relative;
     line-height: 1.5em; }
     .event h2 {
       margin-right: 130px; }
-    .event .time {
-      font-size: 110%; }
+    .event .content {
+      margin-left: 60px; }
     .event .location {
-      font-size: 110%; }
+      font-size: 130%; }
     .event .description {
-      padding-top: 0;
-      font-size: 100%; }
+      padding: 0.5em 0;
+      font-size: 110%; }
     .event .share, .event .checkin {
       float: none; }
     .event .actions {
@@ -148,6 +164,9 @@ h1, h2, h3, h4, h5, h6, .time {
   body {
     font-size: 11px; }
 
+  #hd {
+    padding: 0.5em; }
+
   #wrap {
     margin: auto;
     width: 920px; }
@@ -159,11 +178,7 @@ h1, h2, h3, h4, h5, h6, .time {
     display: block; }
 
   .events {
-    border-top: 1px solid #adadad;
     padding-top: 1em; }
-
-  .description {
-    font-size: 110%; }
 
   .event {
     border: 0;
@@ -174,11 +189,17 @@ h1, h2, h3, h4, h5, h6, .time {
     width: 450px;
     min-height: 100px; }
     .event h2 {
-      margin-right: 115px; }
+      margin-right: 110px;
+      line-height: 1em;
+      font-size: 140%; }
+    .event .location {
+      font-size: 130%; }
     .event .time {
       font-size: 130%; }
+    .event .description {
+      font-size: 110%; }
     .event .actions {
-      top: 1em;
+      top: 1.3em;
       font-size: 110%; } }
 @media screen and (min-width: 1350px) {
   #wrap {

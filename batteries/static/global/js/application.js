@@ -71,6 +71,9 @@
   });
 
   summarize = function(elements, max_length) {
+    if (max_length == null) {
+      max_length = 150;
+    }
     return $(elements).each(function() {
       var el;
       el = $(this);
@@ -90,7 +93,7 @@
   };
 
   $(function() {
-    return summarize('.summarize', 250);
+    return summarize('.summarize');
   });
 
   $(function() {
@@ -207,39 +210,59 @@
     str = str.join(' ');
     result = format_date(str, start) + ' - ' + format_date(str, end);
     if (!diff.apm) {
-      return result + format_date(' {{ apm }}', end);
+      return result + format_date('{{ apm }}', end);
     } else {
       return result;
     }
   };
 
   $(function() {
-    var target;
+    var get_events, target;
     target = $('.events');
-    console.log('ajax request...');
-    return $.ajax({
-      url: '/api/events/',
-      type: 'get',
-      dataType: 'json',
-      success: function(data) {
-        var end_time, row, start_time, _i, _len, _ref;
-        target.empty();
-        _ref = data.results;
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          row = _ref[_i];
-          start_time = new Date(row.start_time * 1000);
-          end_time = new Date(row.end_time * 1000);
-          target.append(templates.event_template({
-            image_url: row.pic_square,
-            title: row.name,
-            time: time_range(start_time, end_time),
-            location: row.location,
-            description: row.description
-          }));
-        }
-        return summarize('.summarize', 250);
+    get_events = function(position) {
+      var data;
+      data = {};
+      if (position != null) {
+        data = {
+          lat: position.coords.latitude,
+          lon: position.coords.longitude
+        };
       }
-    });
+      return $.ajax({
+        url: '/api/events/',
+        data: data,
+        type: 'get',
+        dataType: 'json',
+        success: function(data) {
+          var end_time, row, start_time, _i, _len, _ref;
+          target.empty();
+          _ref = data.results;
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            row = _ref[_i];
+            start_time = new Date(row.start_time * 1000);
+            end_time = new Date(row.end_time * 1000);
+            target.append(templates.event_template({
+              image_url: row.pic_square,
+              title: row.name,
+              time: time_range(start_time, end_time),
+              location: row.location,
+              description: row.description
+            }));
+          }
+          return summarize('.summarize');
+        },
+        error: function(req, stat, err) {
+          return console.log(req, stat, err);
+        }
+      });
+    };
+    if (navigator.geolocation != null) {
+      return navigator.geolocation.getCurrentPosition(get_events, function() {
+        return get_events();
+      });
+    } else {
+      return get_events();
+    }
   });
 
 }).call(this);
