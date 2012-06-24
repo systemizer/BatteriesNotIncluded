@@ -17,7 +17,7 @@
   <body>
     <div id="hd">
       <h1>Events Near You!</h1>
-      <p>At an event? <a href="/login">Check in with Meetup</a>.</p>
+      <p>At an event? <a href="/login">Check in with Facebook</a>.</p>
     </div>
     <div id="wrap">
       <div id="bd">
@@ -34,9 +34,19 @@
         <% } else { %>
         <% } %>
         <div class="content <%= (!image_url) ? 'noimage' : 'image' %>">
-          <h2><%= h(title) %></h2>
-          <p class="time"><%= time %></p>
-          <p class="location"><a href="http://maps.google.com/maps?q=<%= encodeURIComponent(location) %>"><%= h(location) %></a></p>
+          <h2><a href="<%= url %>"><%= h(title) %></a></h2>
+          <p class="time until">starts in <strong><%= time_until %></strong></p>
+          <p class="time">
+          from
+          <% if (start_date) { %>
+            <strong><%= start_date %></strong>
+            <% if (end_date) { %>
+              to <strong><%= end_date %></strong>
+            <% } %>,
+          <% } %>
+          <strong><%= start_time %></strong> - <strong><%= end_time %></strong>
+          </p>
+          <p class="location">at <a href="http://maps.google.com/maps?q=<%= encodeURIComponent(location) %>"><%= h(location) %></a></p>
           <p class="description summarize"><%= h(description) %></p>
           <p class="actions">
             <a class="share" href="#share">Share</a>

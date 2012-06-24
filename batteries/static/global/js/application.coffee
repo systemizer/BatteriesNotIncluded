@@ -155,17 +155,21 @@ months = [
 ]
 
 format_date = (str, date) ->
+  hours = date.getHours() % 12
+  if hours == 0
+    hours = 12
   format(str,
     year: date.getFullYear()
     month: months[date.getMonth()].substring(0, 3)
     day: date.getDate()
     day_th: number_postfix(date.getDate())
-    hour: date.getHours() % 12 + 1
+    hour: hours
     minute: (if date.getMinutes() < 10 then '0' else '') + date.getMinutes()
     apm: if date.getHours() < 12 then 'am' else 'pm'
   )
 
 date_range = (start, end) ->
+  end ?= new Date()
   diff = {
     year: start.getFullYear() != end.getFullYear()
     month: start.getMonth() != end.getMonth()
@@ -180,16 +184,20 @@ date_range = (start, end) ->
     str[str.length - 1] = str[str.length - 1] + ','
     str.push('{{ year }}')
   str = str.join(' ')
-  result = format_date(str, start) + ' - ' + format_date(str, end)
+  if str.length
+    result = format_date(str, start) + ' - ' + format_date(str, end)
+  else
+    result = ' - '
   if diff.day and not diff.month
     result = format_date('{{ month }} ', start) + result
-  result
+  result.split(' - ')
 
 time_range = (start, end) ->
+  end ?= new Date()
   diff = {
     hour: start.getHours() != end.getHours()
     minute: start.getMinutes() != end.getMinutes()
-    apm: (start.getHours() < 12) != (end.getHours() < 12)
+    apm: (start.getHours() <= 12) != (end.getHours() <= 12)
   }
   str = []
   if diff.hour or diff.minute
@@ -202,20 +210,40 @@ time_range = (start, end) ->
   str = str.join(' ')
   result = format_date(str, start) + ' - ' + format_date(str, end)
   if not diff.apm
-    result + format_date('{{ apm }}', end)
-  else
-    result
+    result += format_date('{{ apm }}', end)
+  result.split(' - ')
+
+time_until = (start, reference) ->
+  reference ?= new Date()
+  if (start.getFullYear() != reference.getFullYear() or start.getMonth() != reference.getMonth() or start.getDate() != reference.getDate())
+    return ''
+  diff = (start.getHours() * 60 + start.getMinutes()) - (reference.getHours() * 60 + reference.getMinutes())
+  hours = Math.floor(diff / 60)
+  minutes = diff % 60
+  s = ''
+  if hours > 0
+    s = format('{{ 0 }} hour{{ 1 }}', hours, if hours == 1 then '' else 's')
+  if minutes > 0
+    if s != ''
+      s += ', '
+    s += format('{{ 0 }} minute{{ 1 }}', minutes, if minutes == 1 then '' else 's')
+  s
+
+null_empty_str = (s) -> if not s? or $.trim(s) == '' then null else s
 
 # templating from JSON
 $ ->
   target = $('.events')
   get_events = (position) ->
-    data = {}
+    data = {
+      num_results: 20
+      offset: 0
+    }
     if position?
-      data = {
+      $.extend(data, {
         lat: position.coords.latitude
         lon: position.coords.longitude
-      }
+      })
     $.ajax(
       url: '/api/events/'
       data: data
@@ -225,21 +253,37 @@ $ ->
         target.empty()
         for row in data.results
           start_time = new Date(row.start_time * 1000)
-          end_time = new Date(row.end_time * 1000)
-          date_str = date_range(start_time, end_time)
-          if $.trim(date_str) != ''
-            date_str += '<br />'
+          if row.end_time?
+            end_time = new Date(row.end_time * 1000)
+          else
+            end_time = null
+          results = date_range(start_time, end_time)
+          date_start = results[0]
+          date_end = results[1]
+          results = time_range(start_time, end_time)
+          time_start = results[0]
+          time_end = results[1]
+          timeuntil = time_until(start_time)
+
+          pos = row.location_gps.split(',')
 
           target.append(templates.event_template(
             h: escapeHTML
+            lat: parseInt(pos[0], 10)
+            lon: parseInt(pos[1], 10)
+            url: row.url
             image_url: if row.pic_square? and $.trim(row.pic_square) != '' then row.pic_square else null
             title: row.name
-            time: time_range(start_time, end_time)
+            time_until: null_empty_str(timeuntil)
+            start_date: null_empty_str(date_start)
+            end_date: null_empty_str(date_end)
+            start_time: null_empty_str(time_start)
+            end_time: null_empty_str(time_end)
             location: row.location
             description: row.description
           ))
         summarize('.summarize')
-        $(window).trigger('resized')
+        $(window).trigger('resize')
       error: (req, stat, err) ->
         console.log(req, stat, err)
     )
