@@ -26,7 +26,9 @@ $(document).ajaxSend((evt, xhr, settings) ->
     xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'))
 )
 
-
+# escapes html, use for template tag
+window.escapeHTML = (data) ->
+  $(document.createElement('div')).html(data).text().replace('\n', '<br/>')
 
 # Simple JavaScript Templating
 # John Resig - http://ejohn.org/ - MIT Licensed
@@ -67,11 +69,10 @@ summarize = (elements, max_length) ->
       el.data('full-text', el.text())
       el.text(el.text().substring(0, max_length) + '... ')
       el.append('<a href="#read-more" class="read-more">more</a>')
-      el.find('.read-more').click(->
+      el.find('.read-more').click ->
         el.text(el.data('full-text'))
         $(window).trigger('summary-expanded', [el, el.text()])
-        false
-      )
+        return false
 
 $ -> summarize('.summarize')
 
@@ -85,15 +86,26 @@ $ ->
       elements.masonry('destroy')
       elements = null
     if width >= cutoff
+      # creating masonry temporarily removes the elements, losing the scroll position...
+      sx = $(window).scrollTop()
+      sy = $(window).scrollLeft()
       elements = $('.events')
       children = elements.find('.event')
+      colWidth = children.width() +
+          parseInt(children.css('padding-left'), 10) +
+          parseInt(children.css('padding-right'), 10) +
+          parseInt(children.css('margin-left'), 10) +
+          parseInt(children.css('margin-right'), 10) +
+          parseInt(children.css('border-left'), 10) +
+          parseInt(children.css('border-right'), 10)
       elements.masonry(
         itemSelector: '.event'
-        columnWidth: children.width() + parseInt(children.css('padding-left'), 10) + parseInt(children.css('padding-right'), 10)
+        columnWidth: colWidth
       )
+      $(window).scrollTop(sx)
+      $(window).scrollLeft(sy)
   $(window).bind('resize', resized)
   $(window).bind('summary-expanded', resized)
-  resized()
 
 
 # provides python-like string formatting.
@@ -128,47 +140,65 @@ number_postfix = (n) ->
     'th'
 
 months = [
-  'January', 'Feburary', 'March', 'April', 'May', 'June', 'July', 'August', 'September',
-  'November', 'October', 'December'
+  'January',
+  'Feburary',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'November',
+  'October',
+  'December'
 ]
 
 format_date = (str, date) ->
   format(str,
-    year: date.getYear()
-    month: months[date.getMonth()]
-    day: date.getDay()
-    day_th: number_postfix(date.getDay())
+    year: date.getFullYear()
+    month: months[date.getMonth()].substring(0, 3)
+    day: date.getDate()
+    day_th: number_postfix(date.getDate())
     hour: date.getHours() % 12 + 1
-    min: date.getMinutes()
+    minute: (if date.getMinutes() < 10 then '0' else '') + date.getMinutes()
     apm: if date.getHours() < 12 then 'am' else 'pm'
   )
 
-time_range = (start, end) ->
+date_range = (start, end) ->
   diff = {
-    year: start.getYear() != end.getYear()
+    year: start.getFullYear() != end.getFullYear()
     month: start.getMonth() != end.getMonth()
-    day: start.getDay() != end.getDay()
-    hour: start.getHours() != end.getHours()
-    minute: start.getMinutes() != end.getMinutes()
-    apm: (start.getHours() < 12) != (end.getHours() < 12)
+    day: start.getDate() != end.getDate()
   }
   str = []
   if diff.month
     str.push('{{ month }}')
   if diff.day
-    if diff.year
-      str.push('{{ day }}{{ day_th }},')
-    else
-      str.push('{{ day }}{{ day_th }}')
+    str.push('{{ day }}{{ day_th }}')
   if diff.year
+    str[str.length - 1] = str[str.length - 1] + ','
     str.push('{{ year }}')
+  str = str.join(' ')
+  result = format_date(str, start) + ' - ' + format_date(str, end)
+  if diff.day and not diff.month
+    result = format_date('{{ month }} ', start) + result
+  result
+
+time_range = (start, end) ->
+  diff = {
+    hour: start.getHours() != end.getHours()
+    minute: start.getMinutes() != end.getMinutes()
+    apm: (start.getHours() < 12) != (end.getHours() < 12)
+  }
+  str = []
   if diff.hour or diff.minute
     if diff.minute
       str.push('{{ hour }}:{{ minute }}')
     else
       str.push('{{ hour }}')
   if diff.apm
-    str.push('{{ apm }}')
+    str[str.length - 1] = str[str.length - 1] + '{{ apm }}'
   str = str.join(' ')
   result = format_date(str, start) + ' - ' + format_date(str, end)
   if not diff.apm
@@ -196,14 +226,20 @@ $ ->
         for row in data.results
           start_time = new Date(row.start_time * 1000)
           end_time = new Date(row.end_time * 1000)
+          date_str = date_range(start_time, end_time)
+          if $.trim(date_str) != ''
+            date_str += '<br />'
+
           target.append(templates.event_template(
-            image_url: row.pic_square
+            h: escapeHTML
+            image_url: if row.pic_square? and $.trim(row.pic_square) != '' then row.pic_square else null
             title: row.name
             time: time_range(start_time, end_time)
             location: row.location
             description: row.description
           ))
         summarize('.summarize')
+        $(window).trigger('resized')
       error: (req, stat, err) ->
         console.log(req, stat, err)
     )

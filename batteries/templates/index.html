@@ -29,18 +29,21 @@
     {# required vars: image_url, title, time, location, description #}
     <script type="text/template" id="event_template">
       <div class="event">
+        <% if (image_url) { %>
         <img src="<%= image_url %>" width="50" height="50" alt="" />
-        <div class="content">
-          <h2><%= title %></h2>
+        <% } else { %>
+        <% } %>
+        <div class="content <%= (!image_url) ? 'noimage' : 'image' %>">
+          <h2><%= h(title) %></h2>
           <p class="time"><%= time %></p>
-          <p class="location"><a href="http://maps.google.com/maps?q=<%= encodeURIComponent(location) %>"><%= location %></a></p>
-          <p class="description summarize"><%= description %></p>
+          <p class="location"><a href="http://maps.google.com/maps?q=<%= encodeURIComponent(location) %>"><%= h(location) %></a></p>
+          <p class="description summarize"><%= h(description) %></p>
           <p class="actions">
             <a class="share" href="#share">Share</a>
             <a class="checkin" href="#checkin">Check in</a>
           </p>
+          <div class="line clear"></div>
         </div>
-        <div class="clear line"></div>
       </div>
     </script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js"></script>
