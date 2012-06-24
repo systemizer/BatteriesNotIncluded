@@ -1,0 +1,95 @@
+@mixin gradient ($start, $end) {
+  background-color: $end;
+  background-image: url(images/fallback-gradient.png); 
+  background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from($start), to($end));
+  background-image: -webkit-linear-gradient(top, $start, $end); 
+  background-image:    -moz-linear-gradient(top, $start, $end);
+  background-image:     -ms-linear-gradient(top, $start, $end);
+  background-image:      -o-linear-gradient(top, $start, $end);
+}
+
+html {
+  @include gradient(#eee, #ddd);
+  width: 100%;
+  min-height: 100%;
+}
+
+body {
+  font-size: 11px;
+  font-family: Arial, Helvetica, sans-serif;
+  padding: 5px;
+}
+
+a {
+  &:link {
+    color: #009;
+  }
+  &:active {
+    color: #900;
+  }
+  &:visited {
+    color: #33c;
+  }
+}
+
+#hd {
+  font-size: 200%;
+  line-height: 1em;
+
+  p {
+    font-size: 75%;
+  }
+}
+
+$event-border-color: #adadad;
+
+.eol { /* end of event lists */
+  clear: both;
+  border: 0;
+  border-top: 1px solid $event-border-color;
+}
+
+.event {
+  list-style-type: none;
+  margin: 0.5em 0;
+  padding: 0.5em 0;
+  clear: both;
+  line-height: 1.75em;
+
+  border-top: 1px solid $event-border-color;
+
+  img {
+    padding: 0 5px;
+    margin-bottom: 5px;
+    width: 50px;
+    float: left;
+  }
+
+  h2 {
+    font-weight: bold;
+    font-size: 170%;
+  }
+  .time {
+    font-size: 140%;
+  }
+  .location {
+    font-size: 135%;
+    line-height: 1em;
+  }
+  .description {
+    font-size: 110%;
+    margin-left: 60px;
+    line-height: 1.5em;
+  }
+  .checkin {
+    float: right
+  }
+
+  .read-more {
+    float: left;
+  }
+}
+
+#ft {
+  clear: both;
+}

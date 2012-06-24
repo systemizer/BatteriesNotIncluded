@@ -1,0 +1,139 @@
+html {
+  background-color: #dddddd;
+  background-image: url(images/fallback-gradient.png);
+  background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#eeeeee), to(#dddddd));
+  background-image: -webkit-linear-gradient(top, #eeeeee, #dddddd);
+  background-image: -moz-linear-gradient(top, #eeeeee, #dddddd);
+  background-image: -ms-linear-gradient(top, #eeeeee, #dddddd);
+  background-image: -o-linear-gradient(top, #eeeeee, #dddddd);
+  width: 100%;
+  min-height: 100%; }
+
+body {
+  font-size: 11px;
+  font-family: Arial, Helvetica, sans-serif;
+  padding: 5px; }
+
+a:link {
+  color: #009; }
+a:active {
+  color: #900; }
+a:visited {
+  color: #33c; }
+
+#hd {
+  font-size: 200%;
+  line-height: 1em;
+  font-weight: bold; }
+  #hd p {
+    font-size: 75%;
+    font-weight: normal; }
+
+.eol {
+  /* end of event lists */
+  clear: both;
+  border: 0;
+  border-top: 1px solid #adadad; }
+
+.event {
+  list-style-type: none;
+  margin: 0.5em 0;
+  padding: 0.5em 0;
+  clear: both;
+  line-height: 1.5em;
+  border-top: 1px solid #adadad; }
+  .event img {
+    padding: 0 5px;
+    margin-bottom: 5px;
+    width: 50px;
+    float: left; }
+  .event h2 {
+    font-weight: bold;
+    font-size: 170%; }
+  .event .location {
+    font-size: 135%; }
+  .event .time {
+    font-size: 135%; }
+  .event .description {
+    font-size: 110%;
+    padding-top: 0.2em;
+    margin-left: 60px;
+    line-height: 1.2em; }
+  .event .actions {
+    margin-left: 60px;
+    padding: 0.5em 0;
+    font-size: 130%; }
+  .event .checkin {
+    float: right; }
+  .event .share {
+    float: left; }
+
+.long {
+  display: none; }
+
+.medium {
+  display: none; }
+
+@media screen and (min-width: 768px) {
+  body {
+    font-size: 12px; }
+
+  .short {
+    display: none; }
+
+  .medium {
+    display: block; }
+
+  #hd {
+    text-align: center; }
+
+  .eol {
+    position: relative;
+    top: 1em; }
+
+  .event {
+    position: relative;
+    line-height: 1.5em; }
+    .event .time {
+      font-size: 110%; }
+    .event .location {
+      font-size: 110%; }
+    .event .description {
+      padding-top: 0; }
+    .event .share, .event .checkin {
+      float: none; }
+    .event .actions {
+      position: absolute;
+      right: 0;
+      top: 0;
+      padding: 0;
+      margin: 0 1em;
+      font-size: 110%; } }
+@media screen and (min-width: 992px) {
+  body {
+    font-size: 11px; }
+
+  #wrap {
+    margin: auto;
+    width: 920px; }
+
+  .medium {
+    display: none; }
+
+  .long {
+    display: block; }
+
+  .events {
+    border-top: 1px solid #adadad;
+    padding-top: 1em; }
+
+  .event {
+    border: 0;
+    margin: 0;
+    padding: 10px 0;
+    clear: none;
+    float: left;
+    width: 300px; }
+    .event .actions {
+      top: 10px;
+      font-size: 120%; } }
