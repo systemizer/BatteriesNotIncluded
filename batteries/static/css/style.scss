@@ -1,0 +1,212 @@
+@mixin gradient ($start, $end) {
+  background-color: $end;
+  background-image: url(images/fallback-gradient.png); 
+  background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from($start), to($end));
+  background-image: -webkit-linear-gradient(top, $start, $end); 
+  background-image:    -moz-linear-gradient(top, $start, $end);
+  background-image:     -ms-linear-gradient(top, $start, $end);
+  background-image:      -o-linear-gradient(top, $start, $end);
+}
+
+@mixin border-radius ($p) {
+  -webkit-border-radius: $p;
+  -moz-border-radius: $p;
+  -o-border-radius: $p;
+  -ms-border-radius: $p;
+  border-radius: $p;
+}
+
+html {
+  @include gradient(#eee, #ddd);
+  width: 100%;
+  min-height: 100%;
+}
+
+body {
+  font-size: 11px;
+  font-family: Arial, Helvetica, sans-serif;
+  padding: 5px;
+}
+
+a {
+  &:link {
+    color: #009;
+  }
+  &:active {
+    color: #900;
+  }
+  &:visited {
+    color: #33c;
+  }
+}
+
+h1, h2, h3, h4, h5, h6, .time {
+  font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
+}
+
+#hd {
+  font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
+  font-size: 200%;
+  line-height: 1em;
+  font-weight: bold;
+  text-align: center;
+
+  p {
+    font-size: 75%;
+    font-weight: normal;
+  }
+}
+
+$event-border-color: #adadad;
+
+.eol { /* end of event lists */
+  clear: both;
+  border: 0;
+  border-top: 1px solid $event-border-color;
+}
+
+.event {
+  list-style-type: none;
+  margin: 0.5em 0;
+  padding: 0.5em 0;
+  clear: both;
+  line-height: 1.5em;
+
+  border-top: 1px solid $event-border-color;
+
+  img {
+    padding: 0 5px;
+    margin-bottom: 5px;
+    width: 50px;
+    float: left;
+  }
+
+  h2 {
+    font-weight: bold;
+    font-size: 170%;
+  }
+  .location {
+    font-size: 140%;
+  }
+  .time {
+    font-size: 140%;
+  }
+  .description {
+    font-size: 110%;
+    padding-top: 0.2em;
+    margin-left: 60px;
+    line-height: 1.2em;
+  }
+  .actions {
+    margin: 1em 0 0 60px;
+    padding: 0 0 1em 0;
+    font-size: 130%;
+    float: right;
+
+    $hi: #36a;
+    $lo: #13a;
+    a:link, a:visited {
+      text-decoration: none;
+      padding: 5px;
+      color: #eee;
+      border: 1px solid #13f;
+      @include gradient($hi, $lo);
+      @include border-radius(3px);
+    }
+
+    a:hover {
+      $lighten: 5%;
+      color: #fff;
+      border: 1px solid lighten($lo, $lighten);
+      @include gradient(lighten($hi, $lighten), lighten($lo, $lighten));
+      @include border-radius(3px);
+    }
+  }
+}
+
+.long { display: none; }
+.medium { display: none; }
+
+@media screen and (min-width: 480px) {
+}
+
+@media screen and (min-width: 768px) {
+  body {
+    font-size: 12px;
+  }
+  .short { display: none; }
+  .medium { display: block; }
+  .eol {
+    position: relative;
+    top: 1em;
+  }
+  .event {
+    position: relative;
+    line-height: 1.5em;
+    .time {
+      font-size: 110%;
+    }
+    .location {
+      font-size: 110%;
+    }
+    .description {
+      padding-top: 0;
+      font-size: 100%;
+    }
+    .share, .checkin { float: none }
+    .actions {
+      position: absolute;
+      right: 0;
+      top: 0.75em;
+      float: static;
+      padding: 0;
+      margin: 0 1em;
+      font-size: 110%;
+    }
+  }
+}
+
+@media screen and (min-width: 1024px) {
+  body {
+    font-size: 11px;
+  }
+  #wrap {
+    margin: auto;
+    width: 920px;
+  }
+  .medium { display: none; }
+  .long { display: block; }
+  .events {
+    border-top: 1px solid #adadad;
+    padding-top: 1em;
+  }
+  .description {
+    font-size: 110%;
+  }
+  .event {
+    border: 0;
+    margin: 0;
+    padding: 1em 5px;
+    clear: none;
+    float: left;
+    width: 450px;
+    min-height: 100px;
+
+    .time {
+      font-size: 130%;
+    }
+    .actions {
+      top: 1em;
+      font-size: 110%;
+    }
+  }
+}
+
+@media screen and (min-width: 1350px) {
+  #wrap {
+    width: 1200px;
+  }
+  .event {
+    width: 390px;
+  }
+}
