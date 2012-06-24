@@ -341,6 +341,7 @@
           return $(window).trigger('resize');
         },
         error: function(req, stat, err) {
+          console.error('no geolocation');
           return console.log(req, stat, err);
         }
       });
@@ -350,6 +351,7 @@
         return get_events();
       });
     } else {
+      console.error('no geolocation');
       return get_events();
     }
   });

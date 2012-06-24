@@ -285,10 +285,12 @@ $ ->
         summarize('.summarize')
         $(window).trigger('resize')
       error: (req, stat, err) ->
+        console.error('no geolocation')
         console.log(req, stat, err)
     )
   if navigator.geolocation?
     navigator.geolocation.getCurrentPosition(get_events, -> get_events())
   else
+    console.error('no geolocation')
     get_events()
 
