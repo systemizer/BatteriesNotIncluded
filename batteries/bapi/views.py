@@ -6,6 +6,7 @@ from django.conf import settings
 from batteries.bapi.utils import provider_request_map
 
 import grequests
+from gevent import Greenlet
 
 import urllib
 import time
@@ -19,29 +20,13 @@ def events(request):
     lat = request.GET.get("lat")
     lon = request.GET.get("lon")
     cur_time = int(time.time()*1000)
-    provider = request.GET.get("provider")
 
-    if not provider in provider_request_map.keys():
-        raise Http404("Provider not available")
+    g1 = Greenlet.spawn(provider_request_map['eventbrite'],lat,lon)
+    g2 = Greenlet.spawn(provider_request_map['eventful'],lat,lon)
+    g3 = Greenlet.spawn(provider_request_map['yahoo'],lat,lon)
 
-    request_func = provider_request_map[provider]
-    data = request_func(lat,lon)
+    data = g3.get() + g2.get() + g1.get()
     return HttpResponse(json.dumps({'results':data}))
-    
-    
-    
-    #urls = [url_gen(lat,lon,cur_time) for url_gen in provider_url_generators.values()]
-        
-    # payload = {'query':'select eid,start_time,end_time,location,name,description,pic_square from event where eid=209798352393506','format':'json'}
-    # url = "https://api.facebook.com/method/fql.query?%s" % (urllib.urlencode(payload))
-
-    # urls = [url]
-
-    # rs = (grequests.get(u) for u in urls)
-    # results = grequests.map(rs)
-    # result = json.loads(results[0].text)
-    # result_json = {'results':[result[0],result[0],result[0],result[0]]}
-    # return HttpResponse(json.dumps(result_json))
 
 def events_eventful(request):
     lat = request.GET.get("lat")
