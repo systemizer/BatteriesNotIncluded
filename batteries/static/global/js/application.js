@@ -177,13 +177,13 @@
       hours = 12;
     }
     return format(str, {
-      year: date.getUTCFullYear(),
-      month: months[date.getUTCMonth()].substring(0, 3),
-      day: date.getUTCDate(),
-      day_th: number_postfix(date.getUTCDate()),
+      year: date.getFullYear(),
+      month: months[date.getMonth()].substring(0, 3),
+      day: date.getDate(),
+      day_th: number_postfix(date.getDate()),
       hour: hours,
-      minute: (date.getUTCMinutes() < 10 ? '0' : '') + date.getUTCMinutes(),
-      apm: date.getUTCHours() < 12 ? 'am' : 'pm'
+      minute: (date.getMinutes() < 10 ? '0' : '') + date.getMinutes(),
+      apm: date.getHours() < 12 ? 'am' : 'pm'
     });
   };
 
@@ -194,9 +194,9 @@
       end = new Date();
     }
     diff = {
-      year: start.getUTCFullYear() !== end.getUTCFullYear(),
-      month: start.getUTCMonth() !== end.getUTCMonth(),
-      day: start.getUTCDate() !== end.getUTCDate()
+      year: start.getFullYear() !== end.getFullYear(),
+      month: start.getMonth() !== end.getMonth(),
+      day: start.getDate() !== end.getDate()
     };
     str = [];
     if (diff.month) {
@@ -235,9 +235,9 @@
       end = new Date();
     }
     diff = {
-      hour: start.getUTCHours() !== end.getUTCHours(),
-      minute: start.getUTCMinutes() !== end.getUTCMinutes(),
-      apm: (start.getUTCHours() <= 12) !== (end.getUTCHours() <= 12)
+      hour: start.getHours() !== end.getHours(),
+      minute: start.getMinutes() !== end.getMinutes(),
+      apm: (start.getHours() <= 12) !== (end.getHours() <= 12)
     };
     str = [];
     if (diff.hour || diff.minute) {
@@ -271,10 +271,10 @@
     if (reference == null) {
       reference = new Date();
     }
-    if (start.getUTCFullYear() !== reference.getUTCFullYear() || start.getUTCMonth() !== reference.getUTCMonth() || start.getUTCDate() !== reference.getUTCDate()) {
+    if (start.getFullYear() !== reference.getFullYear() || start.getMonth() !== reference.getMonth() || start.getDate() !== reference.getDate()) {
       return '';
     }
-    diff = (start.getUTCHours() * 60 + start.getUTCMinutes()) - (reference.getUTCHours() * 60 + reference.getUTCMinutes());
+    diff = (start.getHours() * 60 + start.getMinutes()) - (reference.getHours() * 60 + reference.getMinutes());
     hours = Math.floor(diff / 60);
     minutes = diff % 60;
     s = '';
@@ -324,13 +324,13 @@
           _ref = data.results;
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
             row = _ref[_i];
-            start_time = new Date(row.start_time * 1000);
+            start_time = new Date(row.start_time * 1000 + 7200000);
             if (row.end_time != null) {
-              end_time = new Date(row.end_time * 1000);
+              end_time = new Date(row.end_time * 1000 + 7200000);
             } else {
               end_time = null;
             }
-            console.log(row, end_time);
+            console.log(row, row.start_time, start_time);
             results = date_range(start_time, end_time);
             date_start = results[0];
             date_end = results[1];

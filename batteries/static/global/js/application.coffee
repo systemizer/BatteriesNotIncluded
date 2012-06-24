@@ -159,22 +159,22 @@ format_date = (str, date) ->
   if hours == 0
     hours = 12
   format(str,
-    year: date.getUTCFullYear()
-    month: months[date.getUTCMonth()].substring(0, 3)
-    day: date.getUTCDate()
-    day_th: number_postfix(date.getUTCDate())
+    year: date.getFullYear()
+    month: months[date.getMonth()].substring(0, 3)
+    day: date.getDate()
+    day_th: number_postfix(date.getDate())
     hour: hours
-    minute: (if date.getUTCMinutes() < 10 then '0' else '') + date.getUTCMinutes()
-    apm: if date.getUTCHours() < 12 then 'am' else 'pm'
+    minute: (if date.getMinutes() < 10 then '0' else '') + date.getMinutes()
+    apm: if date.getHours() < 12 then 'am' else 'pm'
   )
 
 date_range = (start, end) ->
   real_end = end?
   end ?= new Date()
   diff = {
-    year: start.getUTCFullYear() != end.getUTCFullYear()
-    month: start.getUTCMonth() != end.getUTCMonth()
-    day: start.getUTCDate() != end.getUTCDate()
+    year: start.getFullYear() != end.getFullYear()
+    month: start.getMonth() != end.getMonth()
+    day: start.getDate() != end.getDate()
   }
   str = []
   if diff.month
@@ -202,9 +202,9 @@ time_range = (start, end) ->
   console.log(real_end, end)
   end ?= new Date()
   diff = {
-    hour: start.getUTCHours() != end.getUTCHours()
-    minute: start.getUTCMinutes() != end.getUTCMinutes()
-    apm: (start.getUTCHours() <= 12) != (end.getUTCHours() <= 12)
+    hour: start.getHours() != end.getHours()
+    minute: start.getMinutes() != end.getMinutes()
+    apm: (start.getHours() <= 12) != (end.getHours() <= 12)
   }
   str = []
   if diff.hour or diff.minute
@@ -228,9 +228,9 @@ time_range = (start, end) ->
 
 time_until = (start, reference) ->
   reference ?= new Date()
-  if (start.getUTCFullYear() != reference.getUTCFullYear() or start.getUTCMonth() != reference.getUTCMonth() or start.getUTCDate() != reference.getUTCDate())
+  if (start.getFullYear() != reference.getFullYear() or start.getMonth() != reference.getMonth() or start.getDate() != reference.getDate())
     return ''
-  diff = (start.getUTCHours() * 60 + start.getUTCMinutes()) - (reference.getUTCHours() * 60 + reference.getUTCMinutes())
+  diff = (start.getHours() * 60 + start.getMinutes()) - (reference.getHours() * 60 + reference.getMinutes())
   hours = Math.floor(diff / 60)
   minutes = diff % 60
   s = ''
@@ -265,12 +265,12 @@ $ ->
       success: (data) ->
         target.empty()
         for row in data.results
-          start_time = new Date(row.start_time * 1000)
+          start_time = new Date(row.start_time * 1000 + 7200000)
           if row.end_time?
-            end_time = new Date(row.end_time * 1000)
+            end_time = new Date(row.end_time * 1000 + 7200000)
           else
             end_time = null
-          console.log(row, end_time)
+          console.log(row, row.start_time, start_time)
           results = date_range(start_time, end_time)
           date_start = results[0]
           date_end = results[1]
