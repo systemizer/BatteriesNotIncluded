@@ -19,13 +19,14 @@ def home(request):
 def events(request):
     lat = request.GET.get("lat")
     lon = request.GET.get("lon")
-    cur_time = int(time.time()*1000)
+    cur_time = int(time.time())
 
-    g1 = Greenlet.spawn(provider_request_map['eventbrite'],lat,lon)
-    g2 = Greenlet.spawn(provider_request_map['eventful'],lat,lon)
-    g3 = Greenlet.spawn(provider_request_map['yahoo'],lat,lon)
+    g1 = Greenlet.spawn(provider_request_map['eventbrite'],lat,lon,cur_time)
+    g2 = Greenlet.spawn(provider_request_map['eventful'],lat,lon,cur_time)
+    g3 = Greenlet.spawn(provider_request_map['yahoo'],lat,lon,cur_time)
 
     data = g3.get() + g2.get() + g1.get()
+    sorted(data,key = lambda d: d['start_time'])
     return HttpResponse(json.dumps({'results':data}))
 
 def events_eventful(request):

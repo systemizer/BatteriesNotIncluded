@@ -12,7 +12,7 @@ def convert_utc_to_epoch(utc_time):
         utc_time = utc_time.replace("UTC","").strip()
     return int(time.mktime(time.strptime(utc_time, '%Y-%m-%d %H:%M:%S'))) - time.timezone
 
-def eventful_request(lat,lon):
+def eventful_request(lat,lon,cur_time):
     api = eventful.API(settings.EVENTFUL_API_KEY)
     events = api.call("/events/search",location="%s,%s" % (lat,lon),date="Today",within=WITHIN,page_size=10)
 
@@ -30,16 +30,17 @@ def eventful_request(lat,lon):
             'name':event['title'],
             'description':event['description'],
             'pic_square':''} 
-            for event in events['events']['event']]
+            for event in events['events']['event']
+            if event['start_time'] and convert_utc_to_epoch(event['start_time'])>cur_time ]
 
-def yahoo_request(lat,lon):
+def yahoo_request(lat,lon,cur_time):
     base_url = "http://upcoming.yahooapis.com/services/rest/"
     payload={
         'method':'event.search',
         'api_key':settings.YAHOOUPCOMING_API_KEY,
         'location':"%s,%s" % (lat,lon),
         'quick_date':'today',
-        'sort':'distance-asc',
+        'radius':'%smi.' % WITHIN,
         'format':'json'
         }    
     url = "%s?%s" % (base_url,urllib.urlencode(payload))
@@ -63,17 +64,17 @@ def yahoo_request(lat,lon):
             'description':'',
             'pic_square':event['photo_url']
             }             
-        for event in result_json['rsp']['event']]
+        for event in result_json['rsp']['event']
+        if event['utc_start'] and convert_utc_to_epoch(event['utc_start'])>cur_time]
 
 
-def eventbrite_request(lat,lon):
+def eventbrite_request(lat,lon,cur_time):
     base_url = "https://www.eventbrite.com/json/event_search"
     payload = {'app_key':settings.EVENTBRITE_API_KEY,
                'latitude':lat,
                'longitude':lon,
-               'within':100,
+               'within':WITHIN,
                'date':'Today',
-               'max':10,
                }
 
     url = "%s?%s" % (base_url,urllib.urlencode(payload))
@@ -89,7 +90,9 @@ def eventbrite_request(lat,lon):
             'pic_square':event['event']['logo'] if event['event'].has_key("logo") else ""
             } 
                    #the first result in result.json['events'] is always the summary.
-                   for event in result['events'][1:]]
+                   for event in result['events'][1:]
+             if event['event']['start_date'] and convert_utc_to_epoch(event['event']['start_date'])>cur_time
+             ]
 
 
 def meetup_request(lat,lon):
