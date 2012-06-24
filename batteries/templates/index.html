@@ -17,20 +17,24 @@
   <body>
     <div id="hd">
       <h1>Events Near You!</h1>
-      <p>At an event?
-	{% if user.is_authenticated %}
-	<p>Welcome {{user.get_profile.facebook_name}}</p>
-	<img src="{{user.get_profile.image.url}}" width="50px" height="auto" />
-	<a class="logout-button" href="/accounts/logout/">Logout</a>
-	{% else %}
-        <form action="{% url facebook_connect %}?facebook_login=1" method="post">
-	  <input type="hidden" value="{{ request.path }}" name="next" />
-	  <div id="facebook_login_js">
-	    <input onclick="F.connect(this.parentNode.parentNode); return false;" type="image" src="http://e.fashiocdn.com/images/b_signin_facebook_small.png" /><br />
-	  </div>
-	</form>
-	{% endif %}
-      </p>
+        {% if user.is_authenticated %}
+          <div id="account">
+            <p>
+              {{user.get_profile.facebook_name}}
+              <a class="logout-button" href="/accounts/logout/">Logout</a>
+            </p>
+          </div>
+        {% else %}
+          <form action="{% url facebook_connect %}?facebook_login=1" method="post">
+            <p>
+            At an event?
+            <input type="hidden" value="{{ request.path }}" name="next" />
+            <div id="facebook_login_js">
+              <input onclick="F.connect(this.parentNode.parentNode); return false;" type="image" src="http://e.fashiocdn.com/images/b_signin_facebook_small.png" /><br />
+            </div>
+            </p>
+          </form>
+        {% endif %}
     </div>
     <div id="wrap">
       <div id="bd">
@@ -66,8 +70,10 @@
             at <a href="http://maps.google.com/maps?q=<%= encodeURIComponent(has_coords ? 'loc:' + lat + ',' + lon : location) %>"><%= h(location) %></a></p>
           <p class="description summarize"><%= h(description) %></p>
           <p class="actions">
-          <a class="share" href="https://www.facebook.com/sharer.php?u=<%= encodeURIComponent(url) %>&t=<%= encodeURIComponent(title) %>">Share</a>
-            <a class="checkin" href="/api/checkin/?event_url=<%= url %>">Check in</a>
+            <a class="share" href="https://www.facebook.com/sharer.php?u=<%= encodeURIComponent(url) %>&t=<%= encodeURIComponent(title) %>">Share</a>
+            {% if user.is_authenticated %}
+              <a class="checkin" href="/api/checkin/?event_url=<%= url %>">Check in</a>
+            {% endif %}
           </p>
           <div class="line clear"></div>
         </div>

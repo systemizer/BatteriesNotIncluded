@@ -72,12 +72,24 @@ a {
     background: lighten($lo, 5%);
     text-shadow: 0;
     text-decoration: none;
-    @include border-radius(5px);
     padding: 2px 3px;
   }
-  a:link:hover {
+  a:hover {
     color: #fff;
-    background: darken($lo, 10%);
+    background: lighten($lo, 10%);
+  }
+  #account {
+    position: absolute;
+    top: 0;
+    right: 7px;
+    font-family: Arial, Helvetica, sans-serif;
+
+    .logout-button {
+      padding: 0.5em;
+    }
+  }
+  #facebook_login_js {
+    display: inline;
   }
 }
 
@@ -96,6 +108,7 @@ a {
     text-decoration: underline;
   }
 }
+
 
 .clear { clear: both; }
 .line {

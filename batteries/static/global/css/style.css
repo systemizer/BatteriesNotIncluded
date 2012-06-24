@@ -44,15 +44,19 @@ a:visited {
     background: #114ed2;
     text-shadow: 0;
     text-decoration: none;
-    -webkit-border-radius: 5px;
-    -moz-border-radius: 5px;
-    -o-border-radius: 5px;
-    -ms-border-radius: 5px;
-    border-radius: 5px;
     padding: 2px 3px; }
-  #hd a:link:hover {
+  #hd a:hover {
     color: #fff;
-    background: #0b338b; }
+    background: #1357e9; }
+  #hd #account {
+    position: absolute;
+    top: 0;
+    right: 7px;
+    font-family: Arial, Helvetica, sans-serif; }
+    #hd #account .logout-button {
+      padding: 0.5em; }
+  #hd #facebook_login_js {
+    display: inline; }
 
 #ft {
   text-align: center;
