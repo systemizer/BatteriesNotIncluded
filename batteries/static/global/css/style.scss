@@ -97,7 +97,6 @@ a {
 .event {
   list-style-type: none;
   padding: 0.5em 7px;
-  clear: both;
   line-height: 1.5em;
 
   img {
@@ -114,6 +113,9 @@ a {
   }
   .content {
     margin-left: 60px;
+    &.noimage {
+      margin-left: 0;
+    }
   }
   .time {
     font-size: 130%;
@@ -140,7 +142,7 @@ a {
       color: #eee;
       border: 1px solid darken($lo, 5%);
       @include gradient(lighten($lo, 10%), $lo);
-      @include border-radius(5px);
+      @include border-radius(3px);
     }
 
     a:hover {
@@ -152,25 +154,17 @@ a {
   }
 }
 
-.long { display: none; }
-.medium { display: none; }
-
-@media screen and (min-width: 480px) {
-}
-
 /* iPad Resolution */
 @media screen and (min-width: 768px) {
   body {
     font-size: 12px;
   }
-  .short { display: none; }
-  .medium { display: block; }
   .event {
     position: relative;
     line-height: 1.5em;
 
     h2 {
-      margin-right: 130px;
+      margin-right: 120px;
     }
     .content {
       margin-left: 60px;
@@ -189,12 +183,13 @@ a {
       top: 0.75em;
       float: static;
       padding: 0;
-      margin: 0 1em;
+      margin: 0 0.5em;
       font-size: 110%;
     }
   }
 }
 
+/* Desktop */
 @media screen and (min-width: 1024px) {
   body {
     font-size: 11px;
@@ -206,19 +201,19 @@ a {
     margin: auto;
     width: 920px;
   }
-  .medium { display: none; }
-  .long { display: block; }
+  .line { display: none }
   .events {
     padding-top: 1em;
   }
   .event {
     border: 0;
-    margin: 0;
-    padding: 1em 5px;
-    clear: none;
+    margin: 4px 8px;
+    padding: 1em 7px;
     float: left;
-    width: 450px;
-    min-height: 100px;
+    width: 420px;
+    background: #fff;
+    border: 1px solid #aaa;
+    @include border-radius(5px);
 
     h2 {
       margin-right: 110px;
@@ -227,9 +222,11 @@ a {
     }
     .location {
       font-size: 130%;
+      margin-right: 110px;
     }
     .time {
       font-size: 130%;
+      margin-right: 110px;
     }
     .description {
       font-size: 110%;
@@ -246,6 +243,6 @@ a {
     width: 1200px;
   }
   .event {
-    width: 390px;
+    width: 360px;
   }
 }
