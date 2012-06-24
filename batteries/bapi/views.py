@@ -1,6 +1,6 @@
 from django.shortcuts import render_to_response
 from django.template import RequestContext
-from django.http import HttpResponse, Http404
+from django.http import HttpResponse, Http404, HttpNotAllowed
 from django.conf import settings
 from django.core.cache import cache
 from django.contrib.auth.decorators import login_required
@@ -9,6 +9,7 @@ from django_facebook.decorators import facebook_required
 from django_facebook.api import get_persistent_graph
 
 from batteries.bapi.utils import provider_request_map
+from batteries.bapi.models import CheckIn
 
 import grequests
 import requests
@@ -155,8 +156,12 @@ def events_eventbrite(request):
 @facebook_required(scope='publish_actions')
 def checkin(request):
     fb = get_persistent_graph(request)
-    fb.set("me/maivnapp:check_in",website=request.GET.get("event_url"))
+    event_url = request.GET.get("event_url")
+    if CheckIn.objects.filter(user=request.user, event_url=event_url).exists():
+        return HttpNotAllowed('Already checked in here.')
+    fb.set("me/maivnapp:check_in", website=event_url)
+    CheckIn.objects.create(user=request.user, event_url=event_url)
     return HttpResponse("OK")
 
-               
-    
+
+
