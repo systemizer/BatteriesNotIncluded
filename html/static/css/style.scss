@@ -115,7 +115,6 @@ $event-border-color: #adadad;
   .event {
     position: relative;
     line-height: 1.5em;
-    border-right: 1px solid #adadad;
     .time {
       font-size: 110%;
     }
@@ -157,7 +156,7 @@ $event-border-color: #adadad;
     padding: 10px 0;
     clear: none;
     float: left;
-    width: 280px;
+    width: 300px;
 
     .actions {
       top: 10px;

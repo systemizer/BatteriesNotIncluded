@@ -93,8 +93,7 @@ a:visited {
 
   .event {
     position: relative;
-    line-height: 1.5em;
-    border-right: 1px solid #adadad; }
+    line-height: 1.5em; }
     .event .time {
       font-size: 110%; }
     .event .location {
@@ -134,7 +133,7 @@ a:visited {
     padding: 10px 0;
     clear: none;
     float: left;
-    width: 280px; }
+    width: 300px; }
     .event .actions {
       top: 10px;
       font-size: 120%; } }
