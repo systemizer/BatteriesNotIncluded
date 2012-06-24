@@ -323,8 +323,8 @@
             pos = row.location_gps.split(',');
             target.append(templates.event_template({
               h: escapeHTML,
-              lat: parseInt(pos[0], 10),
-              lon: parseInt(pos[1], 10),
+              lat: parseFloat(pos[0]),
+              lon: parseFloat(pos[1]),
               url: row.url,
               image_url: (row.pic_square != null) && $.trim(row.pic_square) !== '' ? row.pic_square : null,
               title: row.name,

@@ -269,8 +269,8 @@ $ ->
 
           target.append(templates.event_template(
             h: escapeHTML
-            lat: parseInt(pos[0], 10)
-            lon: parseInt(pos[1], 10)
+            lat: parseFloat(pos[0])
+            lon: parseFloat(pos[1])
             url: row.url
             image_url: if row.pic_square? and $.trim(row.pic_square) != '' then row.pic_square else null
             title: row.name
