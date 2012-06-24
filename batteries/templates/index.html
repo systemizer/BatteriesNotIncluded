@@ -39,10 +39,7 @@
           <p class="time">
           from
           <% if (start_date) { %>
-            <strong><%= start_date %></strong>
-            <% if (end_date) { %>
-              to <strong><%= end_date %></strong>
-            <% } %>,
+            <strong><%= start_date %></strong><% if (end_date) { %> to <strong><%= end_date %></strong><% } %>,
           <% } %>
           <strong><%= start_time %></strong> - <strong><%= end_time %></strong>
           </p>
