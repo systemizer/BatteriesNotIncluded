@@ -28,9 +28,11 @@ def eventful_request(lat,lon,cur_time):
             'start_time':convert_utc_to_epoch(event['start_time']) if event['start_time'] else None,
             'end_time':convert_utc_to_epoch(event['stop_time']) if event['stop_time'] else None,
             'location':event['venue_name'],
+            'location_gps':"%s,%s" % (event['latitude'],event['longitude']),
+            'url':event['url'],            
             'name':event['title'],
             'description':event['description'],
-            'pic_square':''} 
+            'pic_square':event['image']['url'] if event['image'] else ''} 
             for event in events['events']['event']
             if event['start_time'] and convert_utc_to_epoch(event['start_time'])>cur_time ]
 
@@ -62,6 +64,8 @@ def yahoo_request(lat,lon,cur_time):
             'start_time':convert_utc_to_epoch(event['utc_start']) if event['utc_start'] else None,
             'end_time':convert_utc_to_epoch(event['utc_end']) if event['utc_end'] else None,
             'location':event['venue_name'],
+            'location_gps':"%s,%s" % (event['latitude'],event['longitude']),
+            'url':event['ticket_url'],
             'name':event['name'],
             'description':'',
             'pic_square':event['photo_url']
@@ -88,6 +92,8 @@ def eventbrite_request(lat,lon,cur_time):
             'start_time':convert_utc_to_epoch(event['event']['start_date']) if event['event']['start_date'] else None,
             'end_time':convert_utc_to_epoch(event['event']['end_date']) if event['event']['end_date'] else None,
             'location':event['event']['venue']['name'],
+            'location_gps':event['event']['venue']['Lat-Long'].replace("/",",").replace(" ",""),
+            'url':event['event']['url'],
             'name':event['event']['title'],
             'description':event['event']['description'],
             'pic_square':event['event']['logo'] if event['event'].has_key("logo") else ""
