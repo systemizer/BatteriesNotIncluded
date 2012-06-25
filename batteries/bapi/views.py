@@ -14,7 +14,9 @@ from batteries.bapi.models import CheckIn
 from gevent import Greenlet
 import pygeoip
 from pygeoip import GeoIP
-from pytz import timezone
+import pytz
+
+import datetime
 
 import urllib
 import time
@@ -33,7 +35,16 @@ def events(request):
     cur_time = int(time.time())
 
     gi = GeoIP(settings.GEOCITYFILE,pygeoip.STANDARD)
-    timezone = gi.record_by_addr(request.META['REMOTE_ADDR'])['time_zone']    
+    
+    if request.META['REMOTE_ADDR']=='127.0.0.1':
+        ip = '64.134.231.43'
+    else:
+        ip = request.META['REMOTE_ADDR']
+
+    timezone = pytz.timezone(gi.record_by_addr(ip)['time_zone'])
+    timezone = timezone.localize(datetime.datetime.now()).strftime("%Z")
+    
+    
 
     num_results = int(request.GET.get("num_results")) if request.GET.get("num_results") else 10
     offset = int(request.GET.get("offset")) if request.GET.get("offset") else 0

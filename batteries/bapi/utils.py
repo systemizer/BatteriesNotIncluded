@@ -1,5 +1,6 @@
 from django.conf import settings
 
+from django.http import Http404
 import urllib
 import time
 import eventful
@@ -11,8 +12,9 @@ MAX_RESULTS_PER_PROVIDER = 20
 def convert_iso_to_epoch(iso_time,timezone):
     if not "UTC" in iso_time:        
         iso_time = iso_time + " " + timezone
-    else:
-        return int(time.mktime(time.strptime(iso_time, '%Y-%m-%d %H:%M:%S %Z'))) - time.timezone
+    return int(time.mktime(time.strptime(iso_time, '%Y-%m-%d %H:%M:%S %Z')))
+    #raise Http404(int(time.mktime(time.strptime(iso_time, '%Y-%m-%d %H:%M:%S %Z'))))
+
 
 
 def eventful_request(lat,lon,cur_time,timezone):
