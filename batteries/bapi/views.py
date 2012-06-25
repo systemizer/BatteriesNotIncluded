@@ -42,9 +42,7 @@ def events(request):
         ip = request.META['REMOTE_ADDR']
 
     timezone = pytz.timezone(gi.record_by_addr(ip)['time_zone'])
-    timezone = timezone.localize(datetime.datetime.now()).strftime("%Z")
-    
-    
+    local_time = timezone.localize(datetime.datetime.now())
 
     num_results = int(request.GET.get("num_results")) if request.GET.get("num_results") else 10
     offset = int(request.GET.get("offset")) if request.GET.get("offset") else 0
@@ -55,9 +53,9 @@ def events(request):
         return HttpResponse(json.dumps({'results':cached_value[offset*num_results:num_results*(offset+1)]}))
 
 
-    g1 = Greenlet.spawn(provider_request_map['eventbrite'],lat,lon,cur_time,timezone)
-    g2 = Greenlet.spawn(provider_request_map['eventful'],lat,lon,cur_time,timezone)
-    g3 = Greenlet.spawn(provider_request_map['yahoo'],lat,lon,cur_time,timezone)
+    g1 = Greenlet.spawn(provider_request_map['eventbrite'],lat,lon,cur_time,local_time)
+    g2 = Greenlet.spawn(provider_request_map['eventful'],lat,lon,cur_time,local_time)
+    g3 = Greenlet.spawn(provider_request_map['yahoo'],lat,lon,cur_time,local_time)
 
     data = g3.get() + g2.get() + g1.get()
     data.sort(key = lambda d: d['start_time'])

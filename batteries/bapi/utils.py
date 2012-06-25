@@ -6,6 +6,8 @@ import time
 import eventful
 import requests
 
+import datetime
+
 WITHIN = 2 #miles within to accept events (only required by some providers)
 MAX_RESULTS_PER_PROVIDER = 20
 
@@ -17,9 +19,17 @@ def convert_iso_to_epoch(iso_time,timezone):
 
 
 
-def eventful_request(lat,lon,cur_time,timezone):
+def eventful_request(lat,lon,cur_time,local_time):
     api = eventful.API(settings.EVENTFUL_API_KEY)
-    events = api.call("/events/search",location="%s,%s" % (lat,lon),date="Today",within=WITHIN,page_size=MAX_RESULTS_PER_PROVIDER)
+    timezone = local_time.strftime("%Z")
+
+    if local_time.hour<=21:
+        date = "Today"
+    else:
+        tomorrow = local_time + datetime.timedelta(days=1)
+        date = local_time.strftime("%Y%m%d00") + tomorrow.strftime("%Y%m%d00")
+
+    events = api.call("/events/search",location="%s,%s" % (lat,lon),date=date,within=WITHIN,page_size=MAX_RESULTS_PER_PROVIDER)
 
     #if eventful only has one result, it doesnt give back an array. BAD!
     if events['total_items'] == '0':
@@ -40,17 +50,27 @@ def eventful_request(lat,lon,cur_time,timezone):
             for event in events['events']['event']
             if event['start_time'] and convert_iso_to_epoch(event['start_time'],timezone)>cur_time ]
 
-def yahoo_request(lat,lon,cur_time,timezone):
+def yahoo_request(lat,lon,cur_time,local_time):
+
+    timezone = local_time.strftime("%Z")
+
     base_url = "http://upcoming.yahooapis.com/services/rest/"
     payload={
         'method':'event.search',
         'api_key':settings.YAHOOUPCOMING_API_KEY,
         'location':"%s,%s" % (lat,lon),
-        'quick_date':'today',
         'per_page': MAX_RESULTS_PER_PROVIDER,
         'radius':'%smi.' % WITHIN,
         'format':'json'
         }    
+    if local_time.hour<=21:
+        payload.update({'quick_date':'today'})
+    else:
+        tomorrow = local_time + datetime.timedelta(days=1)
+        payload.update({'min_date':local_time.strftime("%Y-%m-%d"),
+                        'max_date':tomorrow.strftime("%Y-%m-%d")
+                        })
+
     url = "%s?%s" % (base_url,urllib.urlencode(payload))
     result_json = requests.get(url).json
 
@@ -77,15 +97,22 @@ def yahoo_request(lat,lon,cur_time,timezone):
         for event in result_json['rsp']['event']
         if event['utc_start'] and convert_iso_to_epoch(event['utc_start'])>cur_time]
 
-def eventbrite_request(lat,lon,cur_time,timezone):
+def eventbrite_request(lat,lon,cur_time,local_time):
+
+    timezone = local_time.strftime("%Z")
+
     base_url = "https://www.eventbrite.com/json/event_search"
     payload = {'app_key':settings.EVENTBRITE_API_KEY,
                'latitude':lat,
                'longitude':lon,
                'max':MAX_RESULTS_PER_PROVIDER,
                'within':WITHIN,
-               'date':'Today',
                }
+    if local_time.hour<=21:
+        payload.update({'date':'Today',})
+    else:
+        tomorrow = local_time + datetime.timedelta(days=1)
+        payload.update({'date':local_time.strftime("%Y-%m-%d") + " " + tomorrow.strftime("%Y-%m-%d")})
 
     url = "%s?%s" % (base_url,urllib.urlencode(payload))
     result =  requests.get(url).json
@@ -107,7 +134,7 @@ def eventbrite_request(lat,lon,cur_time,timezone):
              ]
 
 
-def meetup_request(lat,lon,cur_time,timezone):
+def meetup_request(lat,lon,cur_time,timezone,hour):
     pass
 
 provider_request_map = {
