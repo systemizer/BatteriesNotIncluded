@@ -27,3 +27,12 @@ FACEBOOK_APP_SECRET = ''
 
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = 'create a unique hash'
+
+EVENTFUL_API_KEY = ""
+EVENTBRITE_API_KEY = ""
+YAHOOUPCOMING_API_KEY = ""
+
+MEETUP_API_KEY = ""
+MEETUP_API_SECRET = ""
+
+GEOCITYFILE = rel('GeoLiteCity.dat', 'root')

@@ -11,9 +11,10 @@ from django_facebook.api import get_persistent_graph
 from batteries.bapi.utils import provider_request_map
 from batteries.bapi.models import CheckIn
 
-import grequests
-import requests
 from gevent import Greenlet
+import pygeoip
+from pygeoip import GeoIP
+from pytz import timezone
 
 import urllib
 import time
@@ -31,6 +32,9 @@ def events(request):
 
     cur_time = int(time.time())
 
+    gi = GeoIP(settings.GEOCITYFILE,pygeoip.STANDARD)
+    timezone = gi.record_by_addr(request.META['REMOTE_ADDR'])['time_zone']    
+
     num_results = int(request.GET.get("num_results")) if request.GET.get("num_results") else 10
     offset = int(request.GET.get("offset")) if request.GET.get("offset") else 0
 
@@ -40,9 +44,9 @@ def events(request):
         return HttpResponse(json.dumps({'results':cached_value[offset*num_results:num_results*(offset+1)]}))
 
 
-    g1 = Greenlet.spawn(provider_request_map['eventbrite'],lat,lon,cur_time)
-    g2 = Greenlet.spawn(provider_request_map['eventful'],lat,lon,cur_time)
-    g3 = Greenlet.spawn(provider_request_map['yahoo'],lat,lon,cur_time)
+    g1 = Greenlet.spawn(provider_request_map['eventbrite'],lat,lon,cur_time,timezone)
+    g2 = Greenlet.spawn(provider_request_map['eventful'],lat,lon,cur_time,timezone)
+    g3 = Greenlet.spawn(provider_request_map['yahoo'],lat,lon,cur_time,timezone)
 
     data = g3.get() + g2.get() + g1.get()
     data.sort(key = lambda d: d['start_time'])
@@ -50,107 +54,6 @@ def events(request):
     cache.set(cache_key,data,60*10)
 
     return HttpResponse(json.dumps({'results':data[offset*num_results:num_results*(offset+1)]}))
-
-def events_eventful(request):
-    lat = request.GET.get("lat")
-    lon = request.GET.get("lon")
-
-    api = eventful.API(settings.EVENTFUL_API_KEY)
-    events = api.call("/events/search",location="%s,%s" % (lat,lon),date="Today",within=2,page_size=10)
-
-    #if eventful only has one result, it doesnt give back an array. BAD!
-    if events['total_items'] == '0':
-        return HttpResponse(json.dumps({'results':[]}))
-    if events['total_items'] == '1':
-        events['events']['event'] = [events['events']['event']]
-
-    result = [{
-            'eid':event['id'],
-            'start_time':event['start_time'],
-            'end_time':event['stop_time'],
-            'location':event['venue_name'],
-            'name':event['title'],
-            'description':event['description'],
-            'pic_square':''}
-              for event in events['events']['event']]
-
-    result_json = {'results':result}
-
-    return HttpResponse(json.dumps(result_json))
-
-def events_yahoo(request):
-    lat = request.GET.get("lat")
-    lon = request.GET.get("lon")
-
-    base_url = "http://upcoming.yahooapis.com/services/rest/"
-    payload={
-        'method':'event.search',
-        'api_key':settings.YAHOOUPCOMING_API_KEY,
-        'location':"%s,%s" % (lat,lon),
-        'quick_date':'today',
-        'sort':'distance-asc',
-        'format':'json'
-        }
-
-    url = "%s?%s" % (base_url,urllib.urlencode(payload))
-    result = requests.get(url)
-
-    result_json = result.json
-
-    #yahoo returns empty string if no results exist?!?!?!?
-    if not result_json:
-        return HttpResponse(json.dumps({'results':[]}))
-    if result_json['rsp']['stat'] != "ok":
-        return HttpResponse(json.dumps({'results':[]}))
-    if result_json['rsp']['resultcount']==0:
-        return HttpResponse(json.dumps({'results':[]}))
-
-    result_json = [
-        {
-            'eid':event['id'],
-            'start_time':event['utc_start'],
-            'end_time':event['utc_end'],
-            'location':event['venue_name'],
-            'name':event['name'],
-            'description':'',
-            'pic_square':event['photo_url']
-            }
-        for event in result_json['rsp']['event']]
-
-    return HttpResponse(json.dumps({'results':result_json}))
-
-
-def events_eventbrite(request):
-    lat = request.GET.get("lat")
-    lon = request.GET.get("lon")
-
-    base_url = "https://www.eventbrite.com/json/event_search"
-    payload = {'app_key':settings.EVENTBRITE_API_KEY,
-               'latitude':lat,
-               'longitude':lon,
-               'within':100,
-               'date':'This Week',
-               'max':10,
-               }
-    url = "%s?%s" % (base_url,urllib.urlencode(payload))
-    result = requests.get(url)
-
-
-
-    result_json = [{
-            'eid':event['event']['id'],
-            'start_time':event['event']['start_date'],
-            'end_time':event['event']['end_date'],
-            'location':event['event']['venue']['name'],
-            'name':event['event']['title'],
-            'description':event['event']['description'],
-            'pic_square':event['event']['logo'] if event['event'].has_key("logo") else ""
-            }
-                   #the first result in result.json['events'] is always the summary.
-                   for event in result.json['events'][1:]]
-
-    return HttpResponse(json.dumps({'results':result_json}))
-
 
 @login_required
 @facebook_required(scope='publish_actions')
