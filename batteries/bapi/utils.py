@@ -15,13 +15,12 @@ def convert_iso_to_epoch(iso_time,timezone):
     if not "UTC" in iso_time:        
         iso_time = iso_time + " " + timezone
     return int(time.mktime(time.strptime(iso_time, '%Y-%m-%d %H:%M:%S %Z')))
-    #raise Http404(int(time.mktime(time.strptime(iso_time, '%Y-%m-%d %H:%M:%S %Z'))))
 
 
 
 def eventful_request(lat,lon,cur_time,local_time):
     api = eventful.API(settings.EVENTFUL_API_KEY)
-    timezone = local_time.strftime("%Z")
+    timezone = local_time.tzname()
 
     if local_time.hour<=21:
         date = "Today"
@@ -52,7 +51,7 @@ def eventful_request(lat,lon,cur_time,local_time):
 
 def yahoo_request(lat,lon,cur_time,local_time):
 
-    timezone = local_time.strftime("%Z")
+    timezone = local_time.tzname()
 
     base_url = "http://upcoming.yahooapis.com/services/rest/"
     payload={
@@ -99,7 +98,7 @@ def yahoo_request(lat,lon,cur_time,local_time):
 
 def eventbrite_request(lat,lon,cur_time,local_time):
 
-    timezone = local_time.strftime("%Z")
+    timezone = local_time.tzname()
 
     base_url = "https://www.eventbrite.com/json/event_search"
     payload = {'app_key':settings.EVENTBRITE_API_KEY,
