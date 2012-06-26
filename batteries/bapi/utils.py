@@ -12,15 +12,18 @@ WITHIN = 2 #miles within to accept events (only required by some providers)
 MAX_RESULTS_PER_PROVIDER = 20
 
 def convert_iso_to_epoch(iso_time,timezone):
-    if not "UTC" in iso_time:        
-        iso_time = iso_time + " " + timezone
-    return int(time.mktime(time.strptime(iso_time, '%Y-%m-%d %H:%M:%S %Z')))
+    if "UTC" in iso_time:        
+        return int(time.mktime(time.strptime(iso_time, '%Y-%m-%d %H:%M:%S %Z')))
+    else:
+        dt = datetime.datetime.fromtimestamp(time.mktime(time.strptime(iso_time,'%Y-%m-%d %H:%M:%S')))
+        dt.replace(tzinfo=timezone)
+        return time.mktime(dt.timetuple())
 
 
 
-def eventful_request(lat,lon,cur_time,local_time):
+
+def eventful_request(lat,lon,cur_time,local_time,timezone):
     api = eventful.API(settings.EVENTFUL_API_KEY)
-    timezone = local_time.tzname()
 
     if local_time.hour<=21:
         date = "Today"
@@ -49,9 +52,7 @@ def eventful_request(lat,lon,cur_time,local_time):
             for event in events['events']['event']
             if event['start_time'] and convert_iso_to_epoch(event['start_time'],timezone)>cur_time ]
 
-def yahoo_request(lat,lon,cur_time,local_time):
-
-    timezone = local_time.tzname()
+def yahoo_request(lat,lon,cur_time,local_time,timezone):
 
     base_url = "http://upcoming.yahooapis.com/services/rest/"
     payload={
@@ -96,9 +97,7 @@ def yahoo_request(lat,lon,cur_time,local_time):
         for event in result_json['rsp']['event']
         if event['utc_start'] and convert_iso_to_epoch(event['utc_start'])>cur_time]
 
-def eventbrite_request(lat,lon,cur_time,local_time):
-
-    timezone = local_time.tzname()
+def eventbrite_request(lat,lon,cur_time,local_time,timezone):
 
     base_url = "https://www.eventbrite.com/json/event_search"
     payload = {'app_key':settings.EVENTBRITE_API_KEY,

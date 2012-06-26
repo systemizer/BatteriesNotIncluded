@@ -53,9 +53,9 @@ def events(request):
         return HttpResponse(json.dumps({'results':cached_value[offset*num_results:num_results*(offset+1)]}))
 
 
-    g1 = Greenlet.spawn(provider_request_map['eventbrite'],lat,lon,cur_time,local_time)
-    g2 = Greenlet.spawn(provider_request_map['eventful'],lat,lon,cur_time,local_time)
-    g3 = Greenlet.spawn(provider_request_map['yahoo'],lat,lon,cur_time,local_time)
+    g1 = Greenlet.spawn(provider_request_map['eventbrite'],lat,lon,cur_time,local_time,timezone)
+    g2 = Greenlet.spawn(provider_request_map['eventful'],lat,lon,cur_time,local_time,timezone)
+    g3 = Greenlet.spawn(provider_request_map['yahoo'],lat,lon,cur_time,local_time,timezone)
 
     data = g3.get() + g2.get() + g1.get()
     data.sort(key = lambda d: d['start_time'])
