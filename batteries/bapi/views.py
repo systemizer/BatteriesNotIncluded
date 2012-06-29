@@ -8,7 +8,7 @@ from django.contrib.auth.decorators import login_required
 from django_facebook.decorators import facebook_required
 from django_facebook.api import get_persistent_graph
 
-from batteries.bapi.utils import provider_request_map
+from batteries.bapi.utils import provider_request_map, PROVIDERS
 from batteries.bapi.models import CheckIn
 
 from gevent import Greenlet
@@ -35,7 +35,7 @@ def events(request):
     if request.GET.get("provider"):
         providers = [request.GET.get("provider")]
     else:
-        providers = ['eventbrite','eventful','yahoo']
+        providers = PROVIDERS
 
     cur_time = int(time.time())
 
@@ -56,18 +56,16 @@ def events(request):
     cached_value = cache.get(cache_key)
     if cached_value:
         return HttpResponse(json.dumps({'results':cached_value[offset*num_results:num_results*(offset+1)]}))
+    
+    threads = [Greenlet.spawn(provider_request_map[provider],lat,lon,cur_time,local_time,timezone) for provider in providers]
 
+    results = []
+    map(results.extend,[g.get() for g in threads])
+    results.sort(key = lambda d: d['start_time'])
 
-    g1 = Greenlet.spawn(provider_request_map['eventbrite'],lat,lon,cur_time,local_time,timezone)
-    g2 = Greenlet.spawn(provider_request_map['eventful'],lat,lon,cur_time,local_time,timezone)
-    g3 = Greenlet.spawn(provider_request_map['yahoo'],lat,lon,cur_time,local_time,timezone)
+    cache.set(cache_key,results,60*10)
 
-    data = g3.get() + g2.get() + g1.get()
-    data.sort(key = lambda d: d['start_time'])
-
-    cache.set(cache_key,data,60*10)
-
-    return HttpResponse(json.dumps({'results':data[offset*num_results:num_results*(offset+1)]}))
+    return HttpResponse(json.dumps({'results':results[offset*num_results:num_results*(offset+1)]}))
 
 @login_required
 @facebook_required(scope='publish_actions')

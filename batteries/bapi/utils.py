@@ -10,6 +10,8 @@ import datetime
 
 WITHIN = 2 #miles within to accept events (only required by some providers)
 MAX_RESULTS_PER_PROVIDER = 20
+PROVIDERS = ['eventbrite','eventful','yahoo','songkick']
+
 
 def convert_iso_to_epoch(iso_time,timezone):
     if "UTC" in iso_time:        
@@ -21,8 +23,8 @@ def convert_iso_to_epoch(iso_time,timezone):
 
 
 def songkick_request(lat,lon,cur_time,local_time,timezone):
-    base_url = "http://api.songkick.com/api/3.0/events.json?apikey="
-    payload = {'api_key':settings.SONGKICK_APIKEY,
+    base_url = "http://api.songkick.com/api/3.0/events.json"
+    payload = {'apikey':settings.SONGKICK_APIKEY,
                'location':"geo:%s,%s" % (lat,lon),
                'per_page':MAX_RESULTS_PER_PROVIDER}
 
@@ -35,7 +37,7 @@ def songkick_request(lat,lon,cur_time,local_time,timezone):
                         'max_date':tomorrow.strftime("%Y-%m-%d")})
 
     url = "%s?%s" % (base_url,urllib.urlencode(payload))
-    result_json = requests.get(url).json()
+    result_json = requests.get(url).json
     return [{'eid':event['id'],
              'start_time':"%s %s" % (event['start']['date'],event['start']['time']),
              'end_time':'',
