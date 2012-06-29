@@ -20,7 +20,31 @@ def convert_iso_to_epoch(iso_time,timezone):
         return time.mktime(dt.timetuple())
 
 
+def songkick_request(lat,lon,cur_time,local_time,timezone):
+    base_url = "http://api.songkick.com/api/3.0/events.json?apikey="
+    payload = {'api_key':settings.SONGKICK_APIKEY,
+               'location':"geo:%s,%s" % (lat,lon),
+               'per_page':MAX_RESULTS_PER_PROVIDER}
 
+    if local_time.hour<=21:
+        payload.update({'min_date':local_time.strftime("%Y-%m-%d"),
+                        'max_date':local_time.strftime("%Y-%m-%d")})
+    else:
+        tomorrow = local_time + datetime.timedelta(days=1)
+        payload.update({'min_date':local_time.strftime("%Y-%m-%d"),
+                        'max_date':tomorrow.strftime("%Y-%m-%d")})
+
+    url = "%s?%s" % (base_url,urllib.urlencode(payload))
+    result_json = requests.get(url).json()
+    return [{'eid':event['id'],
+             'start_time':"%s %s" % (event['start']['date'],event['start']['time']),
+             'end_time':'',
+             'location':event['venue']['displayName'],
+             'location_gps':"%s,%s" % (event['venue']['lat'],event['venue']['lng']),
+             'name':event['displayName'],             
+             'description':'',
+             'pic_square':''
+             } for event in result_json['resultsPage']['results']['event']]
 
 def eventful_request(lat,lon,cur_time,local_time,timezone):
     api = eventful.API(settings.EVENTFUL_API_KEY)
@@ -139,7 +163,7 @@ provider_request_map = {
     'eventful' : eventful_request,
     'yahoo' : yahoo_request,
     'eventbrite' : eventbrite_request,
-    'meetup' : meetup_request,
+    'songkick':songkick_request,
 }
 
 # MEETUP_URL_ROOT = "https://api.meetup.com/2/open_events.json"

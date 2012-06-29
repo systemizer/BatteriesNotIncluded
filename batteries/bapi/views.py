@@ -32,6 +32,11 @@ def events(request):
     if not lat or not lon:
         raise Http404
 
+    if request.GET.get("provider"):
+        providers = [request.GET.get("provider")]
+    else:
+        providers = ['eventbrite','eventful','yahoo']
+
     cur_time = int(time.time())
 
     gi = GeoIP(settings.GEOCITYFILE,pygeoip.STANDARD)
